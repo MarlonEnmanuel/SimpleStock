@@ -1,0 +1,20 @@
+{
+    "name": "simplestock",
+    "description": "Aplicación simple para gestión de inventarios",
+    "keywords": ["inventario","rest"],
+    "homepage": "https://github.com/MarlonEnmanuel/simplestock",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marlon Enmanuel Montalvo Flores",
+            "email": "marlon.enmanuel.mf@gmail.com",
+            "homepage": "https://www.facebook.com/tysehperu"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "slim/slim": "^3.1",
+        "slim/php-view": "^2.0",
+        "monolog/monolog": "^1.17"
+    }
+}

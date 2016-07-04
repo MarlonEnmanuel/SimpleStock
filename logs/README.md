@@ -1,0 +1,1 @@
+SimpleStock registra incidentes en el sistema en esta carpeta
