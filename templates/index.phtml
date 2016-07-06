@@ -2,8 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <title>Slim 3</title>
-        <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+        <title>Simple Stock | <?= $pagename ?></title>
         <style>
             body {
                 margin: 50px 0 0 0;
@@ -24,15 +23,13 @@
                 margin-bottom: 0;
             }
         </style>
+
+        <script type="text/javascript" src="../public/js/jquery-3.0.0.min.js"></script>
+        <script type="text/javascript" src="../public/js/underscore-min.js"></script>
+        <script type="text/javascript" src="../public/js/backbone-min.js"></script>
     </head>
     <body>
-        <h1>Slim</h1>
-        <div>a microframework for PHP</div>
-
-        <?php if (isset($name)) : ?>
-            <h2>Hello <?= htmlspecialchars($name); ?>!</h2>
-        <?php else: ?>
-            <p>Try <a href="http://www.slimframework.com">SlimFramework</a>
-        <?php endif; ?>
+        <h1>Simple Stock</h1>
+        <div>Aplicación simple para control de inventarios</div>
     </body>
 </html>

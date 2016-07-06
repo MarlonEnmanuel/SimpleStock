@@ -14,5 +14,14 @@ return [
             'name' => 'slim-app',
             'path' => __DIR__ . '/../logs/app.log',
         ],
+
+        //Database Settings
+        'connection' => [
+            'host' => "localhost",             //Dirección de la BD
+            'user' => "usersimplestock",       //Usuario de la BD
+            'pass' => "aplicacionsimplestock", //Password de la BD
+            'name' => "simplestock",           //Nombre de la BD   
+            'port' => "3306",                  //Puerto de la BD
+        ],
     ],
 ];
