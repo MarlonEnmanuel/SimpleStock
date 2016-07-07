@@ -4,23 +4,27 @@ namespace SimpleStock\Models;
 
 class ListModels {
 
-	public $modelname;
-	public $models = array();
+	public $model;
+	public $list = array();
 
-	public function __construct($modelname){
-		$this->modelname = $modelname;
+	public function __construct(abstractModel $model){
+		$this->model = $model;
 	}
 
 	public function add(&$model){
-		array_push($this->models, $model);
+		array_push($this->list, $model);
 	}
 
-	public function toJSON ($fields){
+	public function toJSON($fields=null, $isExclude=false){
+		return json_encode($this->toArray($fields, $isExclude));
+	}
+
+	public function toArray ($fields=null, $isExclude=false){
 		$array = array();
-		foreach ($this->models as $key => $val) {
-			array_push($array, $val->toArray($fields));
+		foreach ($this->list as $key => $val) {
+			array_push($array, $val->toArray($fields, $isExclude));
 		}
-		return json_encode($array);
+		return $array;
 	}
 
 }

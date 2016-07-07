@@ -24,32 +24,32 @@ class Usuario extends abstractModel{
 		'estado' => array(
 				'sqltype' => 'i',
 				'phptype' => 'boolean',
-				'isinput' => 'true',
+				'isinput' => true,
 			),
 		'user' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
-				'isinput' => 'true',
+				'isinput' => true,
 			),
 		'pass' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
-				'isinput' => 'true',
+				'isinput' => true,
 			),
 		'nombres' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
-				'isinput' => 'true',
+				'isinput' => true,
 			),
 		'apellidos' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
-				'isinput' => 'true',
+				'isinput' => true,
 			),
 		'puesto' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
-				'isinput' => 'true',
+				'isinput' => true,
 			),
 	);
 

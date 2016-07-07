@@ -27,9 +27,22 @@ $container['mysqli'] = function($c){
                         	$settings['name'],
                         	$settings['port']);
 	if($mysqli->connect_errno){
-		throw new Exception('Error al conectar con la base de datos');
+		throw new Exception('Error al conectar con la base de datos', 500);
 	}else{
 		$mysqli->set_charset("utf8");
 	}
 	return $mysqli;
+};
+
+$container['errorHandler'] = function($c){
+    return function ($request, $response, $exception) use ($c) {
+
+        $code = $exception->getCode() ? $exception->getCode() : 500;
+        $mess = $exception->getMessage();
+        $type = 'text/plain;charset=utf-8';
+
+        return $c['response']->withStatus( $code )
+                             ->withHeader('Content-Type', $type)
+                             ->write( $mess );
+    };
 };
