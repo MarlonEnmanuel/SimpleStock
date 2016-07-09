@@ -6,7 +6,6 @@ require_once __DIR__.'/abstractModel.php';
 
 class Categoria extends abstractModel{
 
-	public $fechreg;
 	public $codigo;
 	public $nombre;
 	public $descrip;
@@ -15,12 +14,6 @@ class Categoria extends abstractModel{
 	public $table = 'categoria';
 	
 	public $types = array(
-		'fechreg' => array(
-				'sqltype' => 's',
-				'phptype' => 'datetime',
-				'isinput' => false,
-				'required' => false
-			),
 		'codigo' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',

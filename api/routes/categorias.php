@@ -24,7 +24,6 @@ $app->group('/api/categorias', function(){
 		$Cat = new Models\Categoria();
 		$CAD = new Access\Categoria($mysqli, $logger);
 
-		$Cat->fechreg 	= new DateTime();
 		$Cat->codigo 	= $inputs['codigo'];
 		$Cat->nombre	= $inputs['nombre'];
 		$Cat->descrip	= $inputs['descrip'];

@@ -6,9 +6,12 @@ use \SimpleStock\Access as Access;
 $app->group('/api/productos', function(){
 
 	require_once __DIR__.'/../models/ListModels.php';
+
 	require_once __DIR__.'/../models/Producto.php';
 	require_once __DIR__.'/../access/Producto.php';
 
+	require_once __DIR__.'/../models/Inventario.php';
+	require_once __DIR__.'/../access/Inventario.php';
 
 	/**
 	* Crear nuevo producto
@@ -52,6 +55,31 @@ $app->group('/api/productos', function(){
 		$lista = $PAD->search();
 		
 		return $response->withJson($lista->toArray());
+	});
+
+
+	/**
+	* Obtener productos por periodo
+	*/
+	$this->get('/periodo/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$PAD = new Access\Producto($mysqli, $logger);
+		$IAD = new Access\Inventario($mysqli, $logger);
+
+		$invs = $IAD->search()->searchBy('idperiodo', $args['id']);
+
+		$prods = new Models\ListModels(new Models\Producto());
+		foreach ($invs->list as $key => $iv) {
+			$pro = new Models\Producto($iv->idproducto);
+			$PAD->read($pro);
+			$prods->add($pro);
+		}
+		
+		return $response->withJson($prods->toArray());
 	});
 
 

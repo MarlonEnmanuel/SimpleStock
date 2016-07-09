@@ -73,8 +73,8 @@ class Movimiento extends abstractModel{
 		'idusuario' => array(
 				'sqltype' => 'i',
 				'phptype' => 'integer',
-				'isinput' => true,
-				'required' => true,
+				'isinput' => false,
+				'required' => false,
 				'min' => 1
 			),
 		'idinventario' => array(

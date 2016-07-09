@@ -1,1 +1,1 @@
-html,body{min-height:100%}
+.sslogin{height:100%;position:fixed;z-index:20;width:100%;margin-bottom:0;}@media print{.sslogin{display:none}}.sslogin-form-titulo{margin-bottom:0}.sslogin-form-logo img{width:85%}html,body{min-height:100%}

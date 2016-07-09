@@ -1,10 +1,25 @@
-<script type="text/template">
-	<div class="login row">
-	    <div class="col s12 center  ">
-	        <h1 class="blue-text text-darken-4">Simple Stock</h1>
+
+<script type="text/template" id="sslogin" data-class="sslogin row light-blue darken-2 z-depth-4 valign-wrapper" data-tag="div">
+
+    <div class="sslogin-form col s10 offset-s1 m8 offset-m2 l4 offset-l4 white z-depth-3 valign">
+    	<div class="row">
+    		<div class="col s12 center">
+    			<h4 class="sslogin-form-titulo teal-text">Simple Stock</h4>
+    		</div>
 	    </div>
-	    <div class="col s6 offset-s3 m4 offset-m4 l2 offset-l5 white circle">
-	        <img class="responsive-img" src="/img/logo.png" alt="Logo SimpleStock">
-	    </div>
-	</div>
+    	<form class="row">
+	    	<div class="col s12 input-field">
+    			<input id="user" type="text" class="validate">
+          		<label for="user">Usuario</label>
+    		</div>
+    		<div class="col s12 input-field">
+    			<input id="pass" type="password" class="validate">
+          		<label for="pass">Constraseña</label>
+    		</div>
+    		<div class="col s12 input-field center">
+    			<button id="entrar" class="waves-effect waves-light btn">Entrar</button>
+    		</div>
+    	</form>
+    </div>
+
 </script>

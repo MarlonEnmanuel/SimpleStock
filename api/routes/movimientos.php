@@ -6,51 +6,88 @@ use \SimpleStock\Access as Access;
 $app->group('/api/movimientos', function(){
 
 	require_once __DIR__.'/../models/ListModels.php';
+
 	require_once __DIR__.'/../models/Movimiento.php';
 	require_once __DIR__.'/../access/Movimiento.php';
 
+	require_once __DIR__.'/../models/Inventario.php';
+	require_once __DIR__.'/../access/Inventario.php';
+
+	require_once __DIR__.'/../models/Periodo.php';
+	require_once __DIR__.'/../access/Periodo.php';
+
 
 	/**
-	* Crear nueva Movimiento
+	* Crear nuevo movimiento
 	*/
 	$this->post('/', function($request, $response){
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
 
 		$inputs = $request->getParsedBody();
 
-		$Mov = new Models\Movimiento();
 		$MAD = new Access\Movimiento($mysqli, $logger);
+		$IAD = new Access\Inventario($mysqli, $logger);
+		$PAD = new Access\Periodo($mysqli, $logger);
 
+
+		$Inv = new Models\Inventario((int) $inputs['idinventario']);
+		$IAD->read($Inv);
+
+		$Per = new Models\Periodo($Inv->idperiodo);
+		$PAD->read($Per);
+
+		if($Per->actual==false)
+			throw new Exception("El periodo elegido no está en transcurso", 400);
+
+		
+		$Mov = new Models\Movimiento();
 		$Mov->fechreg 	= new DateTime();
 		$Mov->tipo 		= $inputs['tipo'];
 		$Mov->cantidad	= $inputs['cantidad'];
 		$Mov->lote		= $inputs['lote'];
 		$Mov->guia 		= $inputs['guia'];
 		$Mov->apunte 	= $inputs['apunte'];
-		$Mov->saldoini	= $inputs[''];
-		$Mov->saldofin 	= $inputs[''];
-		$Mov->idusuario = $inputs[''];
-		$Mov->idinventario = $inputs[''];
+		$Mov->idusuario = $login['id'];
+		$Mov->idinventario = $inputs['idinventario'];
 
 		$Mov->validate();
 
-		$MAD->create($Mov);
+		$Mov->saldoini = $Inv->saldo;
+		if($Mov->tipo == 'entrada'){
+			$Mov->saldofin = $Mov->saldoini + $Mov->cantidad;
+		}else{
+			$Mov->saldofin = $Mov->saldoini - $Mov->cantidad;
+		}
+		$Inv->saldo = $Mov->saldofin;
+
+
+		$mysqli->autocommit(false);
+		try{
+			$MAD->create($Mov);
+			$IAD->update($Inv);
+			$mysqli->commmit();
+		}catch(\Exception $e){
+			$mysqli->rollback();
+			throw $e;
+		}finally{
+			$mysqli->autocommit(true);
+		}
 
 		return $response->withJson($Mov->toArray(), 201);
 	});
 
 
 	/**
-	* Obtener todos los usuarios
+	* Obtener todos los movimientos
 	*/
 	$this->get('/', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
 
 		$MAD = new Access\Movimiento($mysqli, $logger);
 		$lista = $MAD->search();
@@ -60,13 +97,29 @@ $login  = &$this->login;
 
 
 	/**
-	* Obtener usuario por id
+	* Obtener todos los movimientos por inventario
+	*/
+	$this->get('/inventario/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$MAD = new Access\Movimiento($mysqli, $logger);
+		$lista = $MAD->search()->searchBy('idinventario', $args['id']);
+		
+		return $response->withJson($lista->toArray());
+	});
+
+
+	/**
+	* Obtener movimiento por id
 	*/
 	$this->get('/{id}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
 
 		$Mov = new Models\Movimiento((int) $args['id']);
 		$MAD = new Access\Movimiento($mysqli, $logger);
@@ -84,7 +137,7 @@ $login  = &$this->login;
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
 
 		$inputs = $request->getParsedBody();
 
@@ -93,15 +146,9 @@ $login  = &$this->login;
 
 		$MAD->read($Mov);
 
-		$Mov->tipo 	= $inputs['tipo'];
-		$Mov->cantidad	= $inputs['cantidad'];
-		$Mov->lote	= $inputs['lote'];
+		$Mov->lote		= $inputs['lote'];
 		$Mov->guia 		= $inputs['guia'];
 		$Mov->apunte 	= $inputs['apunte'];
-		$Mov->saldoini	= $inputs[''];
-		$Mov->saldofin 	= $inputs[''];
-		$Mov->idusuario = $inputs[''];
-		$Mov->idinventario = $inputs[''];
 
 		$Mov->validate();
 
@@ -110,24 +157,5 @@ $login  = &$this->login;
 		return $response->withJson($Mov->toArray(), 202);
 	});
 
-
-	/**
-	* Eliminar usuario por id
-	*/
-	$this->delete('/{id}', function ($request, $response, $args) {
-
-		$mysqli = &$this->mysqli;
-		$logger = &$this->logger;
-$login  = &$this->login;
-
-		$Mov = new Models\Movimiento((int) $args['id']);
-		$MAD = new Access\Movimiento($mysqli, $logger);
-
-		$MAD->read($Mov);
-
-		$MAD->delete($Mov);
-
-		return $response->withStatus(204);
-	});
 
 });

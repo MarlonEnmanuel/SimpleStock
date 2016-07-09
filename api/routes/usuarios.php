@@ -17,7 +17,12 @@ $app->group('/api/usuarios', function(){
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
+
+		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
+
+		if(!$isAdmin) 
+			throw new Exception("No está autorizado", 403);
 
 		$inputs = $request->getParsedBody();
 
@@ -47,7 +52,12 @@ $login  = &$this->login;
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
+
+		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
+
+		if(!$isAdmin) 
+			throw new Exception("No está autorizado", 403);
 
 		$UAD = new Access\Usuario($mysqli, $logger);
 		$lista = $UAD->search();
@@ -63,7 +73,12 @@ $login  = &$this->login;
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
+
+		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
+
+		if(!$isAdmin) 
+			throw new Exception("No está autorizado", 403);
 
 		$Usu = new Models\Usuario((int) $args['id']);
 		$UAD = new Access\Usuario($mysqli, $logger);
@@ -81,7 +96,7 @@ $login  = &$this->login;
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
 
 		$inputs = $request->getParsedBody();
 
@@ -90,12 +105,29 @@ $login  = &$this->login;
 
 		$UAD->read($Usu);
 
-		$Usu->estado 	= $inputs['estado'];
-		$Usu->user 		= $inputs['user'];
-		$Usu->pass 		= $inputs['pass'];
-		$Usu->nombres	= $inputs['nombres'];
-		$Usu->apellidos = $inputs['apellidos'];
-		$Usu->puesto	= $inputs['puesto'];
+		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
+		$isme = $login['id'] == $args['id'];
+
+		if($isAdmin) {
+
+			if(!$isme){
+				$Usu->estado 	= $inputs['estado'];
+				$Usu->user 		= $inputs['user'];
+			}
+			$Usu->pass 		= $inputs['pass'];
+			$Usu->nombres	= $inputs['nombres'];
+			$Usu->apellidos = $inputs['apellidos'];
+			$Usu->puesto	= $inputs['puesto'];
+		}else{
+
+			if($isme){
+				$Usu->pass 		= $inputs['pass'];
+				$Usu->nombres	= $inputs['nombres'];
+				$Usu->apellidos = $inputs['apellidos'];
+			}else{
+				throw new Exception("No está autorizado", 403);
+			}
+		}
 
 		$Usu->validate();
 
@@ -112,7 +144,12 @@ $login  = &$this->login;
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+		$login  = &$this->login;
+
+		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
+
+		if(!$isAdmin) 
+			throw new Exception("No está autorizado", 403);
 
 		$Usu = new Models\Usuario((int) $args['id']);
 		$UAD = new Access\Usuario($mysqli, $logger);

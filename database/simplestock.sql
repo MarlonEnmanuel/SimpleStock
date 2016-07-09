@@ -36,12 +36,13 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `simplestock`.`categoria` (
   `idcategoria` INT NOT NULL AUTO_INCREMENT,
-  `fechreg` TIMESTAMP NOT NULL DEFAULT now(),
   `codigo` VARCHAR(45) NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
   `descrip` TEXT NULL,
   `idusuario` INT NULL DEFAULT NULL,
-  PRIMARY KEY (`idcategoria`))
+  PRIMARY KEY (`idcategoria`),
+  UNIQUE INDEX `codigo_UNIQUE` (`codigo` ASC),
+  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC))
 ENGINE = InnoDB;
 
 
@@ -67,13 +68,14 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `simplestock`.`producto` (
   `idproducto` INT NOT NULL AUTO_INCREMENT,
   `codigo` VARCHAR(45) NOT NULL,
-  `nombre` VARCHAR(45) NULL,
+  `nombre` VARCHAR(45) NOT NULL,
   `descrip` TEXT NULL,
   `idusuario` INT NULL,
   `idcategoria` INT NOT NULL,
   PRIMARY KEY (`idproducto`),
   UNIQUE INDEX `codigo_UNIQUE` (`codigo` ASC),
   INDEX `fk_producto_categoria1_idx` (`idcategoria` ASC),
+  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC),
   CONSTRAINT `fk_producto_categoria1`
     FOREIGN KEY (`idcategoria`)
     REFERENCES `simplestock`.`categoria` (`idcategoria`)
@@ -86,8 +88,9 @@ ENGINE = InnoDB;
 -- Table `simplestock`.`inventario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `simplestock`.`inventario` (
-  `idinventario` INT NOT NULL,
-  `saldo` INT NULL,
+  `idinventario` INT NOT NULL AUTO_INCREMENT,
+  `inicial` INT NOT NULL,
+  `saldo` INT NOT NULL,
   `idperiodo` INT NOT NULL,
   `idproducto` INT NOT NULL,
   PRIMARY KEY (`idinventario`),
@@ -138,13 +141,23 @@ ENGINE = InnoDB;
 
 CREATE USER 'usersimplestock' IDENTIFIED BY 'aplicacionsimplestock';
 
-GRANT INSERT, SELECT, UPDATE ON TABLE `simplestock`.`usuario` TO 'usersimplestock';
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE `simplestock`.`usuario` TO 'usersimplestock';
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE `simplestock`.`categoria` TO 'usersimplestock';
-GRANT INSERT, SELECT ON TABLE `simplestock`.`movimiento` TO 'usersimplestock';
+GRANT INSERT, SELECT, UPDATE ON TABLE `simplestock`.`movimiento` TO 'usersimplestock';
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE `simplestock`.`periodo` TO 'usersimplestock';
 GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE `simplestock`.`producto` TO 'usersimplestock';
-GRANT INSERT, SELECT, UPDATE ON TABLE `simplestock`.`inventario` TO 'usersimplestock';
+GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE `simplestock`.`inventario` TO 'usersimplestock';
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `simplestock`.`usuario`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `simplestock`;
+INSERT INTO `simplestock`.`usuario` (`idusuario`, `fechreg`, `estado`, `user`, `pass`, `nombres`, `apellidos`, `puesto`) VALUES (DEFAULT, DEFAULT, 1, 'administrador', 'administrador', 'admin', 'admin', 'admin');
+
+COMMIT;
+

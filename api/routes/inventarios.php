@@ -31,7 +31,8 @@ $app->group('/api/inventarios', function(){
 		$Inv = new Models\Inventario();
 		$IAD = new Access\Inventario($mysqli, $logger);
 
-		$Inv->saldo 	 = $inputs['saldo'];
+		$Inv->inicial 	 = $inputs['inicial'];
+		$Inv->saldo 	 = $inputs['inicial'];
 		$Inv->idperiodo	 = $inputs['idperiodo'];
 		$Inv->idproducto = $inputs['idproducto'];
 

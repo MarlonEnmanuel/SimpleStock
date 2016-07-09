@@ -17,22 +17,25 @@ $app->group('/api/login', function(){
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
-$login  = &$this->login;
+
+		unset($_SESSION['login']);
 
 		$inputs = $request->getParsedBody();
 
 		$UAD = new Access\Usuario($mysqli, $logger);
 
+		$ip_user = $inputs['user'];
 		$ip_pass = $inputs['pass'];
 
 		$list = $UAD->search();
 
-		$user = $list->getBy('user', $inputs['user']);
+		$user = $list->getBy('user', $ip_user);
 
-		if(!isset($list)) 
+
+		if(!isset($user)) 
 			throw new \Exception('Usuario no registrado', 404);
 
-		if($user->pass != $inputs['pass']) 
+		if($user->pass != $ip_pass) 
 			throw new \Exception('Contraseña incorrecta', 401);
 
 		if($user->estado == false)
@@ -50,7 +53,7 @@ $login  = &$this->login;
 	$this->get('/', function ($request, $response, $args) {
 
 		$login = &$this->login;
-		return $response->withJson($user, 200);
+		return $response->withJson($login, 200);
 	});
 
 
