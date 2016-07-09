@@ -15,6 +15,10 @@ class ListModels {
 		array_push($this->list, $model);
 	}
 
+	public function size(){
+		return count($this->list);
+	}
+
 	public function toJSON($fields=null, $isExclude=false){
 		return json_encode($this->toArray($fields, $isExclude));
 	}
@@ -25,6 +29,25 @@ class ListModels {
 			array_push($array, $val->toArray($fields, $isExclude));
 		}
 		return $array;
+	}
+
+	public function getBy($field, $value){
+		foreach ($this->list as $key => $model) {
+			if($model->$field == $value){
+				return $model;
+			}
+		}
+		return null;
+	}
+
+	public function searchBy($field, $value){
+		$sublist = new ListModels($this->model);
+		foreach ($this->list as $key => $model) {
+			if($model->$field == $value){
+				$sublist->add($model);
+			}
+		}
+		return $sublist;
 	}
 
 }

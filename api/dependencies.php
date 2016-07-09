@@ -34,6 +34,14 @@ $container['mysqli'] = function($c){
 	return $mysqli;
 };
 
+$container['login'] = function($c){
+    if(isset($_SESSION['login'])){
+        return $_SESSION['login'];
+    }else{
+        throw new Exception('Acceso denegado, inicie sesión', 403);
+    }
+};
+
 $container['errorHandler'] = function($c){
     return function ($request, $response, $exception) use ($c) {
 

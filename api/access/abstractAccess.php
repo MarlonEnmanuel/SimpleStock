@@ -31,6 +31,7 @@ abstract class abstractAccess {
 
     abstract public function getModel();
 
+
     public function create(&$model){
     	$model->toSqlFormat();
 
@@ -100,8 +101,33 @@ abstract class abstractAccess {
     }
 
 
-    public function update(){
-    	throw new \Exception('Función no soportada', 501);
+    public function update(&$model){
+        $model->toSqlFormat();
+
+        $tablename = $model->table;
+    	$fields = $model->getSqlFieldsVars();
+        $sqltypes  = $model->getSqlTypes();
+
+        $args = array($sqltypes.'i');
+        foreach ($model->types as $prop => $meta) {
+            array_push($args, $model->$prop);
+        }
+        array_push($args, $model->id);
+
+        $sql = 'UPDATE '.$tablename.' SET '.$fields.' WHERE id'.$tablename.'=?';
+
+        $stmt = $this->mysqli->stmt_init();
+        $stmt->prepare($sql);
+        $stmt->bind_param(...$args);
+
+        if($stmt->execute()){
+            $model->fromSqlFormat();
+            $stmt->close();
+        }else{
+            $this->logger->info('Error al actualizar '.$tablename.': '.$stmt->error);
+            $stmt->close();
+            throw new \Exception('Error al actualizar '.$tablename, 500);
+        }
     }
 
 

@@ -21,7 +21,17 @@ abstract class abstractModel {
             if($meta['isInput']!=true) continue;
             switch($meta['phptype']){
                 case 'string' : 
+                    if(empty($this->$prop) && !$meta['required']){
+                        $this->$prop = '';
+                        break;
+                    }
                     $this->$prop = filter_var($this->$prop, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_NO_ENCODE_QUOTES);
+                    if(is_array($meta['options']) && !in_array($this->$prop, $meta['options'])){
+                        array_push($errors, $prop.' no es un valor esperado');
+                    }
+                    if(is_int($meta['min']) && count($this->$prop)<$meta['min']){
+                        array_push($errors, $prop.' debe tener almenos '.$meta['min'].' caracteres');
+                    }
                     break;
                 case 'boolean' :
                     $this->$prop = strtolower(strval($this->$prop));
@@ -36,8 +46,18 @@ abstract class abstractModel {
                     }
                     break;
                 case 'integer' : 
+                    if(empty($this->$prop) && !$meta['required']){
+                        $this->$prop = null;
+                        break;
+                    }
                     if(is_numeric($this->$prop)){
                         $this->$prop = intval($this->$prop);
+                        if(is_int($meta['min']) && $this->prop<$meta['min'] ){
+                            array_push($errors, $prop.' debe ser mínimo'.$meta['min']);
+                        }
+                        if(is_int($meta['max']) && $this->prop>$meta['max'] ){
+                            array_push($errors, $prop.' debe ser máximo'.$meta['min']);
+                        }
                     }else{
                         array_push($errors, 'dato '.$prop.' no válido');
                     }
@@ -78,7 +98,7 @@ abstract class abstractModel {
         foreach ($this->types as $prop => $meta) {
             $val = $this->$prop;
             //combertir fecha de php a segundos totales
-            if($meta['phptype']=='datetime'){
+            if($meta['phptype']=='datetime' && isset($val)){
                 $val = $val->format('U');
             }
 
@@ -120,12 +140,22 @@ abstract class abstractModel {
         }
         return $sqlvars;
     }
-    
+
+    public final function getSqlFieldsVars(){
+        $elems = array();
+        foreach ($this->types as $prop => $meta) {
+            array_push($elems, $prop.'=?');
+        }
+        return implode(',', $elems);
+    }
 
     public final function toSqlFormat(){
     	foreach ($this->types as $prop => $meta) {
     		switch($meta['phptype']){
-    			case 'datetime' : $this->$prop = $this->$prop->format('Y-m-d H:i:s'); break;
+    			case 'datetime' : 
+                    if(isset($this->$prop))
+                        $this->$prop = $this->$prop->format('Y-m-d H:i:s'); 
+                    break;
     			case 'boolean'  : $this->$prop = ($this->$prop) ? 1 : 0; break;
     		}
     	}
@@ -134,8 +164,10 @@ abstract class abstractModel {
     public final function fromSqlFormat(){
     	foreach ($this->types as $prop => $meta) {
     		switch($meta['phptype']){
-    			case 'integer'  : $this->$prop = intval($this->$prop);
-    			case 'datetime' : $this->$prop = \DateTime::createFromFormat('Y-m-d H:i:s', $this->$prop); break;
+    			case 'datetime' : 
+                    if(isset($this->$prop))
+                        $this->$prop = \DateTime::createFromFormat('Y-m-d H:i:s', $this->$prop);
+                    break;
     			case 'boolean'  : $this->$prop = ($this->$prop == '1'); break;
     		}
     	}

@@ -17,11 +17,12 @@ $app->group('/api/usuarios', function(){
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
+$login  = &$this->login;
 
 		$inputs = $request->getParsedBody();
 
 		$Usu = new Models\Usuario();
-		$Uad = new Access\Usuario($mysqli, $logger);
+		$UAD = new Access\Usuario($mysqli, $logger);
 
 		$Usu->fechreg 	= new DateTime();
 		$Usu->estado 	= $inputs['estado'];
@@ -33,7 +34,7 @@ $app->group('/api/usuarios', function(){
 
 		$Usu->validate();
 
-		$Uad->create($Usu);
+		$UAD->create($Usu);
 
 		return $response->withJson($Usu->toArray(['pass'], true), 201);
 	});
@@ -46,9 +47,10 @@ $app->group('/api/usuarios', function(){
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
+$login  = &$this->login;
 
-		$Uad = new Access\Usuario($mysqli, $logger);
-		$lista = $Uad->search();
+		$UAD = new Access\Usuario($mysqli, $logger);
+		$lista = $UAD->search();
 		
 		return $response->withJson($lista->toArray(['pass'], true));
 	});
@@ -61,15 +63,65 @@ $app->group('/api/usuarios', function(){
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
+$login  = &$this->login;
 
 		$Usu = new Models\Usuario((int) $args['id']);
-		$Uad = new Access\Usuario($mysqli, $logger);
+		$UAD = new Access\Usuario($mysqli, $logger);
 
-		$Uad->read($Usu);
+		$UAD->read($Usu);
 
 		return $response->withJson($Usu->toArray(['pass'], true));
 	});
 
 
+	/**
+	* Actualizar usuario por id
+	*/
+	$this->put('/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+$login  = &$this->login;
+
+		$inputs = $request->getParsedBody();
+
+		$Usu = new Models\Usuario((int) $args['id']);
+		$UAD = new Access\Usuario($mysqli, $logger);
+
+		$UAD->read($Usu);
+
+		$Usu->estado 	= $inputs['estado'];
+		$Usu->user 		= $inputs['user'];
+		$Usu->pass 		= $inputs['pass'];
+		$Usu->nombres	= $inputs['nombres'];
+		$Usu->apellidos = $inputs['apellidos'];
+		$Usu->puesto	= $inputs['puesto'];
+
+		$Usu->validate();
+
+		$UAD->update($Usu);
+
+		return $response->withJson($Usu->toArray(['pass'], true), 202);
+	});
+
+
+	/**
+	* Eliminar usuario por id
+	*/
+	$this->delete('/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+$login  = &$this->login;
+
+		$Usu = new Models\Usuario((int) $args['id']);
+		$UAD = new Access\Usuario($mysqli, $logger);
+
+		$UAD->read($Usu);
+
+		$UAD->delete($Usu);
+
+		return $response->withStatus(204);
+	});
 
 });

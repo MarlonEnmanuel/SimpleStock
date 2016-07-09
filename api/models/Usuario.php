@@ -15,41 +15,51 @@ class Usuario extends abstractModel{
 	public $puesto;
 
 	public $table = 'usuario';
+	
 	public $types = array(
 		'fechreg' => array(
 				'sqltype' => 's',
 				'phptype' => 'datetime',
 				'isinput' => false,
+				'required' => false
 			),
 		'estado' => array(
 				'sqltype' => 'i',
 				'phptype' => 'boolean',
 				'isinput' => true,
+				'required' => true
 			),
 		'user' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
 				'isinput' => true,
+				'required' => true,
+				'min' => 5
 			),
 		'pass' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
 				'isinput' => true,
+				'required' => true,
+				'min' => 5
 			),
 		'nombres' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
 				'isinput' => true,
+				'required' => false
 			),
 		'apellidos' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
 				'isinput' => true,
+				'required' => false
 			),
 		'puesto' => array(
 				'sqltype' => 's',
 				'phptype' => 'string',
 				'isinput' => true,
+				'required' => false
 			),
 	);
 
