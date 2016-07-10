@@ -1,13 +1,19 @@
 <?php
 // Routes
 
-$app->get('/[{name}]', function ($request, $response, $args) {
-
+$app->get('/', function ($request, $response, $args) {
 	$args = [
-		'pagename' => 'home',
+		'pagename' => 'Login',
 		'templates' => __DIR__.'/../app/templates/*.html'
 	];
+    return $this->renderer->render($response, 'index.phtml', $args);
+});
 
+$app->get('/home[/]', function ($request, $response, $args) {
+	$args = [
+		'pagename' => 'Home',
+		'templates' => __DIR__.'/../app/templates/*.html'
+	];
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 

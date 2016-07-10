@@ -1,18 +1,39 @@
 
-$(document).ready(function($) {
+app.models.login = new SimpleStock.Models.Login({});
+app.routers.base = new SimpleStock.Routers.Base({});
 
-	app.models.login = new SimpleStock.Models.Login({});
-	app.models.login.fetch();
-
-	app.models.periodoActual = new SimpleStock.Models.Periodo({});
-	app.models.periodoActual.fetch({url: '/api/periodos/actual/'});
-
-	app.collections.categorias = new SimpleStock.Collections.Categorias({});
-	app.collections.categorias.fetch();
-
-	app.collections.productos = new SimpleStock.Collections.Productos({});
-	app.collections.productos.fetch();
+app.init = function() {
 
 	app.views.login = new SimpleStock.Views.Login({});
+	app.views.header = new SimpleStock.Views.Header({});
+
 	app.views.login.render().appendTo('body');
+	app.views.header.render().appendTo('body');
+
+	$(".dropdown-button").dropdown();
+	$(".button-collapse").sideNav();
+	$('.collapsible').collapsible();
+
+	Backbone.history.start({
+		root : '/',
+		pushState : true
+	});
+
+	$('a[href^="/"]').click(function(event) {
+		event.preventDefault();
+		var ruta = $(this).attr('href');
+		Backbone.history.navigate(ruta, {trigger: true});
+	});
+
+	$('a[href="#!"]').click(function(event) {
+		event.preventDefault();
+	});
+
+};
+
+$(document).ready(function($){
+	app.models.login.fetch({
+		success : app.init,
+		error : app.init,
+	});
 });
