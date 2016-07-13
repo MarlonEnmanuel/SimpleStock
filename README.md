@@ -22,4 +22,4 @@ php -S 0.0.0.0:80 -t public
 ```
 
 ## Usar
-Abrir el navegador y dirigirse a `localhost`, para inciar sesión en el sistema use `administradr` como usuario y contraseña
+Abrir el navegador y dirigirse a `localhost`, para inciar sesión en el sistema use `administrador` como usuario y contraseña
