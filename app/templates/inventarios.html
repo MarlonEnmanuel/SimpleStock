@@ -1,0 +1,61 @@
+
+<script type="text/template" id="page-inventarios" data-class="page-inventarios container" data-tag="div">
+    <div class="section">
+		<table class="bordered responsive-table">
+			<thead>
+				<tr>
+					<th data-field="codigo">Codigo Inventario</th>
+					<th data-field="codigo">Codigo Producto</th>
+					<th data-field="producto">Producto</th>
+					<th data-field="saldo">Saldo Inicial</th>
+					<th data-field="stock">Stock</th>
+				</tr>
+			</thead>
+			<tbody class="container"></tbody>
+		</table>
+    </div>
+    <br>
+    <div class="section">
+    	<button class="crear waves-effect waves-light btn">Nuevo Inventario</button>
+    </div>
+    <br>
+</script>
+
+
+<script type="text/template" id="view-inventario" data-class="view-inventario" data-tag="tr">
+	<td><%= id %></td>
+    <td><%= app.collections.productos.get(idproducto).get('codigo') %></td>
+    <td><%= app.collections.productos.get(idproducto).get('nombre') %></td>
+	<td><%= inicial %></td>
+	<td><%= saldo %></td>
+</script>
+
+
+<script type="text/template" id="new-inventario" data-class="new-inventario container" data-tag="div">
+    <div class="row">
+    	<div class="col s12">
+    		<h4>Inventariar Producto</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-codigo" type="text" class="validate" name="codigo">
+	        	<label for="ip-codigo">Código del Producto</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-inicial" type="text" class="validate" name="inicial">
+	        	<label for="ip-inicial">Saldo Inicial del producto</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>

@@ -50,4 +50,18 @@ class ListModels {
 		return $sublist;
 	}
 
+	public function filterFech($field, $from, $to){
+		$sublist = new ListModels($this->model);
+		foreach ($this->list as $key => $model) {
+			$fm = $model->format('U');
+			$ff = $from->format('U');
+			$ft = $to->format('U');
+
+			if($ff<=$fm && $fm<=$ft){
+				$sublist->add($model);
+			}
+		}
+		return $sublist;
+	}
+
 }

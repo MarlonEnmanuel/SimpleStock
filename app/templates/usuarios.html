@@ -1,0 +1,121 @@
+<script type="text/template" id="page-usuarios" data-class="page-usuarios container" data-tag="div">
+    <div class="section">
+		<table class="bordered responsive-table">
+			<thead>
+				<tr>
+					<th data-field="nombres">Nombres</th>
+					<th data-field="apellidos">Apellidos</th>
+					<th data-field="user">Usuario</th>
+					<th data-field="estado">Estado</th>
+					<th data-field="puesto">Puesto</th>
+					<th data-field="fechreg">Fch Reg</th>
+					<th data-field="cambiarEstado"></th>
+					<th data-field="editar"></th>
+				</tr>
+			</thead>
+			<tbody class="container"></tbody>
+		</table>
+    </div>
+    <br>
+    <div class="section">
+    	<button class="crear waves-effect waves-light btn">Nuevo Usuario</button>
+    </div>
+    <br>
+</script>
+
+
+<script type="text/template" id="view-usuario" data-class="view-usuario" data-tag="tr">
+    <td><%= nombres %></td>
+	<td><%= apellidos %></td>
+	<td><%= user %></td>
+	<td><%= (estado)?'Activo':'Inactivo' %></td>
+	<td><%= puesto %></td>
+	<td><%= (new Date(fechreg*1000)).toLocaleString() %></td>
+	<% if(user!='administrador'){ %>
+		<td><a class="cambiarEstado" href="#!" title="Activar o Desactivar"><i class="material-icons">settings_power</i></a></td>
+		<td><a class="editar" href="#!" title="Modificar Usuario"><i class="material-icons">mode_edit</i></a></td>
+	<% }else{ %>
+		<td></td>
+		<td></td>
+	<% } %>
+</script>
+
+
+<script type="text/template" id="new-usuario" data-class="new-usuario container" data-tag="div">
+    <div class="row">
+    	<div class="col s12">
+    		<h4>Registrar Usuario</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-nombres" type="text" class="validate" name="nombres">
+	        	<label for="ip-nombres">Nombres</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-apellidos" type="text" class="validate" name="apellidos">
+	        	<label for="ip-apellidos">Apellidos</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-user" type="text" class="validate" name="user">
+	        	<label for="ip-user">Nombre de Usuario</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-puesto" type="text" class="validate" name="puesto">
+	        	<label for="ip-puesto">Puesto</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>
+
+
+<script type="text/template" id="edit-usuario" data-class="edit-usuario container" data-tag="div">
+	<div class="row">
+    	<div class="col s12">
+    		<h4>Modificar Usuario</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-nombres" type="text" class="validate" name="nombres" value="<%=nombres%>">
+	        	<label for="ip-nombres" class="active">Nombres</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-apellidos" type="text" class="validate" name="apellidos" value="<%=apellidos%>">
+	        	<label for="ip-apellidos" class="active">Apellidos</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-user" type="text" class="validate" name="user" value="<%=user%>">
+	        	<label for="ip-user" class="active">Nombre de Usuario</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-puesto" type="text" class="validate" name="puesto" value="<%=puesto%>">
+	        	<label for="ip-puesto" class="active">Puesto</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>

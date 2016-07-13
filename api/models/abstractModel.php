@@ -38,11 +38,7 @@ abstract class abstractModel {
                     if($this->$prop=='true' || $this->$prop=='1' || $this->$prop=='on'){
                         $this->$prop = true;
                     }else{
-                        if($this->$prop=='false' || $this->$prop=='0' || $this->$prop=='off'){
-                            $this->$prop = false;
-                        }else{
-                            array_push($errors, 'dato '.$prop.' no válido');
-                        }
+                        $this->$prop = false;
                     }
                     break;
                 case 'integer' : 

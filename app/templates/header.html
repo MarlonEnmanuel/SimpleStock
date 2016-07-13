@@ -5,10 +5,6 @@
 
             <a href="#!" class="brand-logo left">Simple Stock</a>
 
-            <ul class="right">
-                
-            </ul>
-
             <div class="container">
                 <a href="#" data-activates="slide-out" class="button-collapse top-nav full hide-on-large-only right">
                     <i class="material-icons">menu</i>
@@ -18,38 +14,80 @@
             <ul id="slide-out" class="side-nav fixed">
                 <li class="ssnav-logo">
                     <h4 class="center-align">
-                        <img src="/img/logo.png" alt="Logo Simple Stock">
+                        <a href="/home"><img src="/img/logo.png" alt="Logo Simple Stock"></a>
                     </h4>
                 </li>
                 <li class="ssnav-user teal-text text-darken-4">
                     <div class="center-align">
                         <h5>Bienvenido</h5>
-                        <h6>Marlon Enmanuel Montalvo Flores</h6>
+                        <h6>
+                            <% if(typeof id != 'undefined'){ %>
+                                <%= (nombres+' '+apellidos) %>
+                            <% } %>
+                        </h6>
                     </div>
                     <br>
                 </li>
                 <li><div class="divider"></div></li>
-                <li><a href="#!">First Sidebar Link</a></li>
-                <li><div class="divider"></div></li>
-                <li><a href="#!">Second Sidebar Link</a></li>
-                <li><div class="divider"></div></li>
+
                 <li class="no-padding">
                     <ul class="collapsible collapsible-accordion">
                         <li>
-                            <a class="collapsible-header">Mantenimiento</a>
+                            <a class="collapsible-header">Registrar</a>
                             <div class="collapsible-body">
                                 <ul>
-                                    <li><a href="#!">Cantegorías</a></li>
-                                    <li><a href="#!">Productos</a></li>
-                                    <li><a href="#!">Periodos</a></li>
+                                    <li><a href="/registrar/entrada">Entrada</a></li>
+                                    <li><a href="/registrar/salida">Salida</a></li>
                                 </ul>
                             </div>
                         </li>
                     </ul>
                 </li>
+
                 <li><div class="divider"></div></li>
+
+                <li class="no-padding">
+                    <ul class="collapsible collapsible-accordion">
+                        <li>
+                            <a class="collapsible-header">Reportes</a>
+                            <div class="collapsible-body">
+                                <ul>
+                                    <li><a href="/reportes/kardex">Kardex</a></li>
+                                    <li><a href="/reportes/entrysal">Entradas y Salidas</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
+                <li><div class="divider"></div></li>
+
+                <li class="no-padding">
+                    <ul class="collapsible collapsible-accordion">
+                        <li>
+                            <a class="collapsible-header">Gestionar</a>
+                            <div class="collapsible-body">
+                                <ul>
+                                    <li><a href="/gestionar/categorias">Categorías</a></li>
+                                    <li><a href="/gestionar/productos">Productos</a></li>
+                                    <li><a href="/gestionar/inventario">Inventario</a></li>
+                                    <% if(typeof id != 'undefined'){ %>
+                                        <% if(id==1 && user=='administrador'){ %>
+                                            <li><a href="/gestionar/usuarios">Usuarios</a></li>
+                                        <% } %>
+                                    <% } %>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
+                <li><div class="divider"></div></li>
+
                 <li><a href="#!" onclick="app.models.login.destroy()">Cerrar Sesion</a></li>
+
                 <li><div class="divider"></div></li>
+
             </ul>
             
             <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>

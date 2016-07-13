@@ -1,21 +1,19 @@
 
 SimpleStock.Routers.Base = Backbone.Router.extend({
+
 	routes : {
 		"" 	: "login",
+
 		"home" : "home",
 		"home/" : "home"
 	},
+
 	login : function () {
-		if(app.models.login.has('id')){
-			Backbone.history.navigate('/home', {trigger: true});
-		}
+		$(document).attr('title', 'Simple Stock | Login');
 	},
+
 	home : function(){
-		this.verificar();
+		$(document).attr('title', 'Simple Stock | Home');
 	},
-	verificar : function(){
-		if(!app.models.login.has('id')){
-			Backbone.history.navigate('/', {trigger: true});
-		}
-	}
+
 });

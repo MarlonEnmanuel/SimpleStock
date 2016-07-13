@@ -11,26 +11,19 @@ SimpleStock.Views.Login = Backbone.View.extend({
 
 	initialize : function(){
 		var self = this;
-		app.models.login.on('destroy', function(){
-			self.cerrar();
-			Backbone.history.navigate('/');
-		});
 	},
 
 	render : function(){
 		this.$el.html(this.template());
-		if(app.models.login.has('id')){
-			this.$el.hide();
-		}
 		return this.$el;
 	},
 
 	abrir : function(){
-		this.$el.slideUp(800);
+		this.$el.slideUp(600);
 	},
 
 	cerrar : function(){
-		this.$el.slideDown(800);
+		this.$el.slideDown(600);
 	},
 
 	logear : function(event){
@@ -43,14 +36,16 @@ SimpleStock.Views.Login = Backbone.View.extend({
 		});
 		app.models.login.save({}, {
 			success : function(){
-				Materialize.toast('Bienvenido!', 3000);
-				self.abrir();
-				Backbone.history.navigate('/home', {trigger: true});
+				app.init();
 			},
 			error : function(jqXHR, textStatus, errorThrown){
 				Materialize.toast(textStatus.responseText, 2500);
 			}
 		});
-	}
+	},
+
+	launchApp : function(){
+
+	},
 
 });

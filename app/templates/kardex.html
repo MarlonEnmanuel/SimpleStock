@@ -1,0 +1,39 @@
+
+<script type="text/template" id="page-kardex" data-class="page-kardex container" data-tag="div">
+	<form action="section">
+		<div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<div class="input-field col s6">
+		        	<input id="ip-codigo" type="text" class="validate" name="codigo">
+		        	<label for="ip-codigo">Código de Inventario</label>
+		        </div>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Generar" type="submit">
+	        </div>
+	    </div>
+	    <br><br>
+	</form>
+    <div class="section">
+		<table class="bordered responsive-table">
+			<thead>
+				<tr>
+					<th data-field="nombres">(new DateTime(fechreg*1000)->toLocalString())</th>
+					<th data-field="apellidos">Entrada</th>
+					<th data-field="user">Salida</th>
+					<th data-field="puesto">Existencia</th>
+					<th data-field="fechreg">Nombre</th>
+				</tr>
+			</thead>
+			<tbody class="container"></tbody>
+		</table>
+    </div>
+</script>
+
+<script type="text/template" id="view-kardex" data-class="view-categoria" data-tag="tr">
+    <td><%= (new DateTime(fechreg*1000)->toLocalString()) %></td>
+	<td><%= (tipo=='entrada') ? cantidad : '' %></td>
+	<td><%= (tipo=='salida') ? cantidad : '' %></td>
+	<td><%= saldofin %></td>
+	<td><%= app.collections.usuarios.get(idusuario)->get('nombres') %> <%= app.collections.usuarios.get(idusuario)->get('apellidos') %></td>s
+</script>

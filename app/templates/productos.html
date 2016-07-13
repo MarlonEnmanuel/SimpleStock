@@ -1,0 +1,129 @@
+<script type="text/template" id="page-productos" data-class="page-productos container" data-tag="div">
+    <div class="section">
+		<table class="bordered responsive-table">
+			<thead>
+				<tr>
+					<th data-field="codigo">Código</th>
+					<th data-field="nombre">Nombre</th>
+					<th data-field="descrip">Descripción</th>
+					<th data-field="usuario">Reg Por</th>
+					<th data-field="categoria">Categoría</th>
+					<th data-field="editar"></th>
+				</tr>
+			</thead>
+			<tbody class="container"></tbody>
+		</table>
+    </div>
+    <br>
+    <div class="section">
+    	<button class="crear waves-effect waves-light btn">Nuevo Producto</button>
+    </div>
+    <br>
+</script>
+
+
+<script type="text/template" id="view-producto" data-class="view-producto" data-tag="tr">
+    <td><%= codigo %></td>
+	<td><%= nombre %></td>
+	<td><%= descrip %></td>
+	<td><%= app.collections.usuarios.get(idusuario).get('user') %></td>
+	<td><%= app.collections.categorias.get(idcategoria).get('nombre') %></td>
+	<td><a class="editar" href="#!" title="Modificar Producto"><i class="material-icons">mode_edit</i></a></td>
+</script>
+
+
+<script type="text/template" id="new-producto" data-class="new-producto container" data-tag="div">
+    <div class="row">
+    	<div class="col s12">
+    		<h4>Registrar Producto</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-codigo" type="text" class="validate" name="codigo" >
+	        	<label for="ip-codigo">Código</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-nombre" type="text" class="validate" name="nombre">
+	        	<label for="ip-nombre" >Nombre del Producto</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s12">
+	        	<input id="ip-descrip" type="text" class="validate" name="descrip">
+	        	<label for="ip-descrip" >Descripción</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<select name="idcategoria">
+					<option value="" disabled selected>Seleccione Categoría</option>
+					<% app.collections.categorias.each(function(model){ %>
+						<option value="<%=model.get('id')%>"> 
+							<%= model.get('codigo') %> - <%= model.get('nombre') %>
+						</option>
+					<% }); %>
+				</select>
+				<label>Seleccione Categoría</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>
+
+
+<script type="text/template" id="edit-producto" data-class="edit-producto container" data-tag="div">
+	 <div class="row">
+    	<div class="col s12">
+    		<h4>Modificar Producto</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-codigo" type="text" class="validate" name="codigo" value="<%=codigo%>">
+	        	<label for="ip-codigo" class="active">Código</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input id="ip-nombre" type="text" class="validate" name="nombre" value="<%=nombre%>">
+	        	<label for="ip-nombre" class="active">Nombre de Categoría</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s12">
+	        	<input id="ip-descrip" type="text" class="validate" name="descrip" value="<%=descrip%>">
+	        	<label for="ip-descrip" class="active">Descripción</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<select name="idcategoria">
+					<% app.collections.categorias.each(function(model){ %>
+						<option value="<%=model.get('id')%>" <%=(idcategoria=model.get('id'))?'selected':''%> > 
+							<%= model.get('codigo') %> - <%= model.get('nombre') %>
+						</option>
+					<% }); %>
+				</select>
+				<label>Seleccione Categoría</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>

@@ -124,6 +124,7 @@ CREATE TABLE IF NOT EXISTS `simplestock`.`movimiento` (
   `saldofin` INT NOT NULL,
   `idusuario` INT NOT NULL,
   `idinventario` INT NOT NULL,
+  `idproducto` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`idmovimiento`),
   INDEX `fk_movimiento_usuario1_idx` (`idusuario` ASC),
   INDEX `fk_movimiento_inventario1_idx` (`idinventario` ASC),
@@ -158,6 +159,16 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 START TRANSACTION;
 USE `simplestock`;
 INSERT INTO `simplestock`.`usuario` (`idusuario`, `fechreg`, `estado`, `user`, `pass`, `nombres`, `apellidos`, `puesto`) VALUES (DEFAULT, DEFAULT, 1, 'administrador', 'administrador', 'admin', 'admin', 'admin');
+
+COMMIT;
+
+
+-- -----------------------------------------------------
+-- Data for table `simplestock`.`periodo`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `simplestock`;
+INSERT INTO `simplestock`.`periodo` (`idperiodo`, `nombre`, `descrip`, `actual`, `fechini`, `fechfin`, `idusuario`) VALUES (DEFAULT, 'Periodo Inicial', 'Periodo generado automaticamente por el sistema', 1, 'now()', 'NULL', 1);
 
 COMMIT;
 

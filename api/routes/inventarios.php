@@ -52,7 +52,7 @@ $app->group('/api/inventarios', function(){
 		if($listPer->size()>0){
 			$listPro = $listPer->searchBy('idproducto', $Inv->idproducto);
 			if($listPro->size()>0){
-				throw new \Exception("Ya existe el inventario en el periodo actual", 400);
+				throw new \Exception("Este producto ya está inventariado en el periodo actual", 400);
 			}
 		}
 

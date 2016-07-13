@@ -84,6 +84,13 @@ class Movimiento extends abstractModel{
 				'required' => true,
 				'min' => 1
 			),
+		'idproducto' => array(
+				'sqltype' => 'i',
+				'phptype' => 'integer',
+				'isinput' => true,
+				'required' => true,
+				'min' => 1
+			),
 	);
 
 }

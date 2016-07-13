@@ -1,0 +1,48 @@
+<script type="text/template" id="ssregistro" data-class="ssregistro container" data-tag="div">
+    
+    <div class="section">
+        <div class="row">
+            <h4>Registrar <%= strtipo %></h4>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <form class="section">
+        <div class="row">
+            <div class="input-field col s6">
+                <input id="ip-idinventario" type="text" class="validate" name="idinventario">
+                <label for="ip-idinventario" >Código de Inventario</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ip-cantidad" type="number" class="validate" name="cantidad" value="1" min="1">
+                <label for="ip-cantidad" class="active">Cantidad</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <input id="ip-lote" type="text" class="validate" name="lote">
+                <label for="ip-lote" >Lote</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ip-guia" type="text" class="validate" name="guia">
+                <label for="ip-guia" >Guía</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="ip-apunte" type="text" class="validate" name="apunte">
+                <label for="ip-apunte" >Apunte</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6 form-cancel">
+                <a class="cancelar waves-effect waves-light btn">Cancelar</a>
+            </div>
+            <div class="input-field col s6">
+                <input class="waves-effect waves-light btn" value="Enviar" type="submit">
+            </div>
+        </div>
+    </form>
+
+</script>

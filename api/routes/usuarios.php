@@ -30,9 +30,9 @@ $app->group('/api/usuarios', function(){
 		$UAD = new Access\Usuario($mysqli, $logger);
 
 		$Usu->fechreg 	= new DateTime();
-		$Usu->estado 	= $inputs['estado'];
+		$Usu->estado 	= true;
 		$Usu->user 		= $inputs['user'];
-		$Usu->pass 		= $inputs['pass'];
+		$Usu->pass 		= '123456';
 		$Usu->nombres	= $inputs['nombres'];
 		$Usu->apellidos = $inputs['apellidos'];
 		$Usu->puesto	= $inputs['puesto'];
@@ -54,11 +54,6 @@ $app->group('/api/usuarios', function(){
 		$logger = &$this->logger;
 		$login  = &$this->login;
 
-		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
-
-		if(!$isAdmin) 
-			throw new Exception("No está autorizado", 403);
-
 		$UAD = new Access\Usuario($mysqli, $logger);
 		$lista = $UAD->search();
 		
@@ -74,11 +69,6 @@ $app->group('/api/usuarios', function(){
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
 		$login  = &$this->login;
-
-		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
-
-		if(!$isAdmin) 
-			throw new Exception("No está autorizado", 403);
 
 		$Usu = new Models\Usuario((int) $args['id']);
 		$UAD = new Access\Usuario($mysqli, $logger);
@@ -114,7 +104,7 @@ $app->group('/api/usuarios', function(){
 				$Usu->estado 	= $inputs['estado'];
 				$Usu->user 		= $inputs['user'];
 			}
-			$Usu->pass 		= $inputs['pass'];
+			
 			$Usu->nombres	= $inputs['nombres'];
 			$Usu->apellidos = $inputs['apellidos'];
 			$Usu->puesto	= $inputs['puesto'];
@@ -127,6 +117,44 @@ $app->group('/api/usuarios', function(){
 			}else{
 				throw new Exception("No está autorizado", 403);
 			}
+		}
+
+		$Usu->validate();
+
+		$UAD->update($Usu);
+
+		return $response->withJson($Usu->toArray(['pass'], true), 202);
+	});
+
+	/**
+	* Cambiar estado de usuario
+	*/
+	$this->put('/{id}/cambiarEstado', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$inputs = $request->getParsedBody();
+
+		$Usu = new Models\Usuario((int) $args['id']);
+		$UAD = new Access\Usuario($mysqli, $logger);
+
+		$UAD->read($Usu);
+
+		$isAdmin = ($login['user']=='administrador' && $login['id']==1);
+		$isme = $login['id'] == $args['id'];
+
+		if($isAdmin) {
+
+			if($isme){
+				throw new Exception("No se puede desactivar", 403);
+			}else{
+				$Usu->estado = $inputs['estado'];
+			}
+		}else{
+
+			throw new Exception("No está autorizado", 403);
 		}
 
 		$Usu->validate();

@@ -13,10 +13,11 @@ gulp.task('compile-stylus', function(){
 
 gulp.task('compile-app', function(){
 	gulp.src([
-		'./app/models/*.js',
-		'./app/collections/*.js', 
-		'./app/views/*.js',
-		'./app/routers/*.js',
+		'./app/init.js',
+		'./app/models/**/*.js',
+		'./app/collections/**/*.js', 
+		'./app/views/**/*.js',
+		'./app/routers/**/*.js',
 		'./app/app.js'
 	])
    	.pipe(concat('app.js'))

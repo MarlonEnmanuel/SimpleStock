@@ -51,24 +51,28 @@ $app->group('/api/movimientos', function(){
 		$Mov->guia 		= $inputs['guia'];
 		$Mov->apunte 	= $inputs['apunte'];
 		$Mov->idusuario = $login['id'];
-		$Mov->idinventario = $inputs['idinventario'];
+		$Mov->idinventario= $inputs['idinventario'];
 
 		$Mov->validate();
 
 		$Mov->saldoini = $Inv->saldo;
 		if($Mov->tipo == 'entrada'){
 			$Mov->saldofin = $Mov->saldoini + $Mov->cantidad;
+			throw new Exception("No puede sacar más de lo que existe", 400);
+			
 		}else{
 			$Mov->saldofin = $Mov->saldoini - $Mov->cantidad;
 		}
+
 		$Inv->saldo = $Mov->saldofin;
+		$Mov->idproducto = $Inv->idproducto;
 
 
 		$mysqli->autocommit(false);
 		try{
 			$MAD->create($Mov);
 			$IAD->update($Inv);
-			$mysqli->commmit();
+			$mysqli->commit();
 		}catch(\Exception $e){
 			$mysqli->rollback();
 			throw $e;
@@ -107,6 +111,31 @@ $app->group('/api/movimientos', function(){
 
 		$MAD = new Access\Movimiento($mysqli, $logger);
 		$lista = $MAD->search()->searchBy('idinventario', $args['id']);
+		
+		return $response->withJson($lista->toArray());
+	});
+
+
+	/**
+	* Obtener todos los movimientos por producto y fecha
+	*/
+	$this->get('/producto/{id}/{fi}/{ff}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$fi = \DateTime::createFromFormat('Y-m-d', $args['fi'].' 00:00:00');
+		$ff = \DateTime::createFromFormat('Y-m-d', $args['ff'].' 23:59:59');
+
+		if($fi===false || $ff===false){
+			throw new Exception("Una de las fechas es incorrecta", 400);
+		}
+
+		$MAD = new Access\Movimiento($mysqli, $logger);
+
+		$lista = $MAD->search()->searchBy('idproducto', $args['id']);
+		$lista = $lista->filterFech('fechreg', $fi, $ff);
 		
 		return $response->withJson($lista->toArray());
 	});
