@@ -11,40 +11,24 @@ SimpleStock.Views.Usuarios = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		app.collections.usuarios.on('add', function(model){
-			var u = new SimpleStock.Views.Usuario({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		this.editer = new SimpleStock.Views.EditUsuario();
 
-		app.collections.usuarios.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
+		app.views.main.add(this);
 
 		app.routers.gestionar.on('route:usuarios', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
+			app.views.main.show(self);
 			app.views.header.setTitle('Usuarios');
-			app.collections.usuarios.reset();
-			app.collections.usuarios.fetch();
+			self.loadTable();
 		});
 
 		app.routers.gestionar.on('route:usuarioNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditUsuario();
-			app.views.main.add(nuevo);
-			app.views.header.setTitle('Usuarios');
+			self.editer.render();
 		});
 
 		app.routers.gestionar.on('route:usuarioEditar', function(){
 			var model = app.collections.usuarios.get(self.editId);
 			if(model){
-				var nuevo = new SimpleStock.Views.EditUsuario({
-					model : model,
-				});
-				app.views.main.add(nuevo);
-				app.views.header.setTitle('Usuarios');
+				self.editer.render(model);
 			}else{
 				Backbone.history.navigate('/gestionar/usuarios');
 				Materialize.toast('El usuario no existe', 4000);
@@ -54,12 +38,24 @@ SimpleStock.Views.Usuarios = Backbone.View.extend({
 
 	render : function(){
 		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
 		return this.$el;
 	},
 
 	crear : function(event){
 		event.preventDefault();
 		Backbone.history.navigate('/gestionar/usuarios/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.usuarios.each(function(model, i){
+			var u = new SimpleStock.Views.Usuario({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
 	},
 
 });

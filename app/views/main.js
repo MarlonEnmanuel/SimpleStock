@@ -5,12 +5,13 @@ SimpleStock.Views.Main = Backbone.View.extend({
 	template 	: _.template($('#sserror').html()),
 
 	initialize : function(){
+		this.pages = [];
 		var self = this;
 		app.routers.base.on('route:home', function(){
-			self.clear();
+			self.clean();
 		});
 		app.routers.base.on('route:login', function(){
-			self.clear();
+			self.clean();
 		});
 	},
 
@@ -19,14 +20,24 @@ SimpleStock.Views.Main = Backbone.View.extend({
 	},
 
 	add : function(view){
+		view.$el.hide();
 		this.$el.append(view.render());
+		this.pages.push(view);
 	},
 
-	clear : function(){
-		this.$el.html('');
+	clean : function(){
+		_(this.pages).each(function(view, index) {
+			view.$el.hide();
+		});
+	},
+
+	show : function(view){
+		this.clean();
+		view.$el.show();
 	},
 
 	renderError : function(){
+		this.clean();
 		this.$el.html(this.template());
 	}
 

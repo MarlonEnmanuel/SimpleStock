@@ -96,58 +96,55 @@ SimpleStock.Views.EditCategoria = Backbone.View.extend({
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'cancelar'
+		'click .cancelar' : 'hide'
 	},
 
-	initialize : function(){
-		this.isEdit = (typeof this.model != 'undefined');
-	},
-
-	render : function(){
-		if(this.isEdit){
-			var data = this.model.toJSON();
+	render : function(model){
+		if(model){
+			var data = model.toJSON();
 			this.$el.html(this.templateEdit(data));
-			return this.$el;
+			this.model = model;
+			this.isEdit = true;
 		}else{
 			this.$el.html(this.templateNew());
-			return this.$el;
+			this.model = new SimpleStock.Models.Categoria({});
+			this.isEdit = false;
 		}
+		this.$el.show();
+		$('html,body').animate({
+		    scrollTop: this.$el.offset().top
+		}, 500);
 	},
 
-	cancelar : function(event){
+	hide : function(event){
 		if(event) event.preventDefault();
-		this.$el.remove();
+		this.$el.hide();
+		Backbone.history.navigate('/gestionar/usuarios');
 	},
 
 	enviar : function(event){
 		event.preventDefault();
 		var self = this;
 		var data = this.$el.find('form').serializeObject();
-		var model;
+		var model = this.model.set(data);
 
-		if(this.isEdit){
-			model = this.model;
-			model.set(data);
-		}else{
-			model = new SimpleStock.Models.Categoria(data);
-		}
-
-		model.on('sync', function(){
-			if(self.isEdit){
-				Materialize.toast('Categoría modificada', 4000);
-				self.cancelar();
-			}else{
-				Materialize.toast('Categoría creada', 4000);
-				app.collections.categorias.add(model);
-				self.cancelar();
-			}
+		model.save({}, {
+			wait: true,
+			success : function(){
+				if(self.isEdit){
+					Materialize.toast('Categoría modificada', 4000);
+					self.hide();
+				}else{
+					Materialize.toast('Categoría creada', 4000);
+					app.collections.categorias.add(model);
+					app.views.categorias.loadTable();
+					self.hide();
+				}
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
 		});
-
-		model.on('error', function(){
-			Materialize.toast('La categoría ya existe', 4000);
-		});
-
-		model.save();
 	}
 
 });
@@ -164,55 +161,51 @@ SimpleStock.Views.Categorias = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		app.collections.categorias.on('add', function(model){
-			var u = new SimpleStock.Views.Categoria({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		this.editer = new SimpleStock.Views.EditCategoria();
 
-		app.collections.categorias.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
+		app.views.main.add(this);
 
 		app.routers.gestionar.on('route:categorias', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
-			app.views.header.setTitle('Categorías');
-			app.collections.categorias.reset();
-			app.collections.categorias.fetch();
+			app.views.main.show(self);
+			app.views.header.setTitle('Categorias');
+			self.loadTable();
 		});
 
 		app.routers.gestionar.on('route:categoriaNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditCategoria();
-			app.views.main.add(nuevo);
-			app.views.header.setTitle('Categorías');
+			self.editer.render();
 		});
 
 		app.routers.gestionar.on('route:categoriaEditar', function(){
 			var model = app.collections.categorias.get(self.editId);
 			if(model){
-				var nuevo = new SimpleStock.Views.EditCategoria({
-					model : model,
-				});
-				app.views.main.add(nuevo);
-				app.views.header.setTitle('Categorías');
+				self.editer.render(model);
 			}else{
-				Backbone.history.navigate('/gestionar/usuarios');
-				Materialize.toast('La cateogiría no existe', 4000);
+				Backbone.history.navigate('/gestionar/categorias');
+				Materialize.toast('La categoría no existe', 4000);
 			}
 		});
 	},
 
 	render : function(){
 		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
 		return this.$el;
 	},
 
 	crear : function(event){
 		event.preventDefault();
 		Backbone.history.navigate('/gestionar/categorias/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.categorias.each(function(model, i){
+			var u = new SimpleStock.Views.Categoria({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
 	},
 
 });
@@ -247,19 +240,22 @@ SimpleStock.Views.Categoria = Backbone.View.extend({
 });
 
 SimpleStock.Views.EditInventario = Backbone.View.extend({
-	tagName 	: $('#edit-inventario').attr('data-tag'),
-	className 	: $('#edit-inventario').attr('data-class'),
+	tagName 	: $('#new-inventario').attr('data-tag'),
+	className 	: $('#new-inventario').attr('data-class'),
 	templateNew : _.template($('#new-inventario').html()),
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'cancelar'
+		'click .cancelar' : 'hide'
 	},
 
 	render : function(){
-		var self = this;
 		this.$el.html(this.templateNew());
-		return this.$el;
+		this.model = new SimpleStock.Models.Inventario({});
+		this.$el.show();
+		$('html,body').animate({
+		    scrollTop: this.$el.offset().top
+		}, 500);
 	},
 
 	cancelar : function(event){
@@ -271,31 +267,30 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 	enviar : function(event){
 		event.preventDefault();
 		var self = this;
-
 		var data = this.$el.find('form').serializeObject();
-		model = new SimpleStock.Models.Inventario(data);
-		var p = app.collections.productos.where({codigo: data.codigo});
+		var model = this.model.set(data);
 
-		if(p.length===0){
+		var pro = app.collections.productos.findWhere({codigo: data.codigo});
+		if(pro){
+			model.set('idproducto', model.get('id'));
+			model.set('idperiodo', 1);
+		}else{
 			Materialize.toast('El producto no existe', 4000);
-			return;
+			return false;
 		}
 
-		model.set('idproducto', p[0].id);
-		model.set('idperiodo', 1);
-
-		model.save();
-
-		model.on('sync', function(){
-			Materialize.toast('Inventario registrado', 4000);
-			self.collection.add(model);
-			self.cancelar();
+		model.save({}, {
+			wait: true,
+			success : function(){
+				Materialize.toast('Inventario registrado', 4000);
+				app.collections.inventarios.add(model);
+				app.views.inventarios.loadTable();
+				self.hide();
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
 		});
-
-		model.on('error', function(){
-			Materialize.toast('El producto ya esta inventariado', 4000);
-		});
-
 	}
 
 });
@@ -312,48 +307,42 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		this.collection = new SimpleStock.Collections.Inventarios({});
+		this.editer = new SimpleStock.Views.EditInventario();
 
-		this.collection.on('add', function(model){
-			var u = new SimpleStock.Views.Inventario({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		app.views.main.add(this);
 
-		this.collection.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
-
-		this.collection.fetch();
-
-		app.routers.gestionar.on('route:inventario', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
+		app.routers.gestionar.on('route:inventarios', function(){
+			app.views.main.show(self);
 			app.views.header.setTitle('Inventario');
-			self.collection.reset();
-			self.collection.fetch();
+			self.loadTable();
 		});
 
-		app.routers.gestionar.on('route:inventarioNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditInventario({
-				collection : self.collection
-			});
-			app.views.main.add(nuevo);
+		app.routers.gestionar.on('route:usuarioNuevo', function(){
+			self.editer.render();
 			app.views.header.setTitle('Inventario');
 		});
-
 	},
 
 	render : function(){
 		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
 		return this.$el;
 	},
 
 	crear : function(event){
 		event.preventDefault();
 		Backbone.history.navigate('/gestionar/inventario/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.usuarios.each(function(model, i){
+			var u = new SimpleStock.Views.Inventario({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
 	},
 
 });
@@ -385,60 +374,56 @@ SimpleStock.Views.EditProducto = Backbone.View.extend({
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'cancelar'
+		'click .cancelar' : 'hide'
 	},
 
-	initialize : function(){
-		this.isEdit = (typeof this.model != 'undefined');
-	},
-
-	render : function(){
-		var self = this;
-		if(this.isEdit){
-			var data = this.model.toJSON();
+	render : function(model){
+		if(model){
+			var data = model.toJSON();
 			this.$el.html(this.templateEdit(data));
-			return this.$el;
+			this.model = model;
+			this.isEdit = true;
 		}else{
 			this.$el.html(this.templateNew());
-			return this.$el;
+			this.model = new SimpleStock.Models.Producto({});
+			this.isEdit = false;
 		}
+		this.$el.show();
+		$('html,body').animate({
+		    scrollTop: this.$el.offset().top
+		}, 500);
+		this.$el.find('select').material_select();
 	},
 
-	cancelar : function(event){
+	hide : function(event){
 		if(event) event.preventDefault();
-		this.remove();
-		Backbone.history.navigate('/gestionar/productos', {trigger: true});
+		this.$el.hide();
+		Backbone.history.navigate('/gestionar/productos');
 	},
 
 	enviar : function(event){
 		event.preventDefault();
 		var self = this;
 		var data = this.$el.find('form').serializeObject();
-		var model;
+		var model = this.model.set(data);
 
-		if(this.isEdit){
-			model = this.model;
-			model.set(data);
-		}else{
-			model = new SimpleStock.Models.Producto(data);
-		}
-
-		model.on('sync', function(){
-			if(self.isEdit){
-				Materialize.toast('Producto modificado', 4000);
-				self.cancelar();
-			}else{
-				Materialize.toast('Producto creado', 4000);
-				app.collections.productos.add(model);
-				self.cancelar();
-			}
+		model.save({}, {
+			wait: true,
+			success : function(){
+				if(self.isEdit){
+					Materialize.toast('Producto modificado', 4000);
+					self.hide();
+				}else{
+					Materialize.toast('Producto creado', 4000);
+					app.collections.productos.add(model);
+					app.views.productos.loadTable();
+					self.hide();
+				}
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
 		});
-
-		model.on('error', function(){
-			Materialize.toast('El producto ya existe', 4000);
-		});
-
-		model.save();
 	}
 
 });
@@ -455,44 +440,26 @@ SimpleStock.Views.Productos = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		app.collections.productos.on('add', function(model){
-			var u = new SimpleStock.Views.Producto({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		this.editer = new SimpleStock.Views.EditProducto();
 
-		app.collections.productos.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
+		app.views.main.add(this);
 
 		app.routers.gestionar.on('route:productos', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
+			app.views.main.show(self);
 			app.views.header.setTitle('Productos');
-			app.collections.productos.reset();
-			app.collections.productos.fetch();
+			self.loadTable();
 		});
 
 		app.routers.gestionar.on('route:productoNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditProducto();
-			app.views.main.add(nuevo);
-			app.views.header.setTitle('Productos');
-			$('select').material_select();
+			self.editer.render();
 		});
 
 		app.routers.gestionar.on('route:productoEditar', function(){
-			var model = app.collections.productoss.productos.get(self.editId);
+			var model = app.collections.productos.get(self.editId);
 			if(model){
-				var nuevo = new SimpleStock.Views.EditProducto({
-					model : model,
-				});
-				app.views.main.add(nuevo);
-				app.views.header.setTitle('Productos');
-				$('select').material_select();
+				self.editer.render(model);
 			}else{
-				Backbone.history.navigate('/gestionar/usuarios');
+				Backbone.history.navigate('/gestionar/productos');
 				Materialize.toast('El producto no existe', 4000);
 			}
 		});
@@ -500,12 +467,24 @@ SimpleStock.Views.Productos = Backbone.View.extend({
 
 	render : function(){
 		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
 		return this.$el;
 	},
 
 	crear : function(event){
 		event.preventDefault();
 		Backbone.history.navigate('/gestionar/productos/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.productos.each(function(model, i){
+			var u = new SimpleStock.Views.Producto({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
 	},
 
 });
@@ -539,6 +518,123 @@ SimpleStock.Views.Producto = Backbone.View.extend({
 	
 });
 
+SimpleStock.Views.Registro = Backbone.View.extend({
+	tagName 	: $('#ssregistro').attr('data-tag'),
+	className 	: $('#ssregistro').attr('data-class'),
+	template 	: _.template($('#ssregistro').html()),
+
+	events : {
+		'submit form' : 'enviar'
+	},
+
+	initialize : function(){
+		var self = this;
+
+		app.views.main.add(this);
+
+		app.routers.registrar.on('route:entrada', function(){
+			self.tipo = 'entrada';
+			self.render();
+			app.views.main.show(self);
+			app.views.header.setTitle('Entrada');
+		});
+
+		app.routers.registrar.on('route:salida', function(){
+			self.tipo = 'salida';
+			self.render();
+			app.views.main.show(self);
+			app.views.header.setTitle('Salida');
+		});
+	},
+
+	render : function(){
+		var data = {};
+		if(this.tipo=='entrada'){
+			data.strtipo = 'Entrada';
+		}else{
+			data.strtipo = 'Salida';
+		}
+		this.$el.html(this.template(data));
+		return this.$el;
+	},
+
+	enviar : function(event){
+		event.preventDefault();
+
+		var self = this;
+		var data = this.$el.find('form').serializeObject();
+		var model = new SimpleStock.Models.Movimiento(data);
+
+		model.set('tipo', self.tipo);
+
+		model.save({}, {
+			success : function(){
+				Materialize.toast('Registro Satisfactorio', 4000);
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
+		});
+	}
+});
+
+SimpleStock.Views.Kardex = Backbone.View.extend({
+	tagName 	: $('#page-kardex').attr('data-tag'),
+	className 	: $('#page-kardex').attr('data-class'),
+	template 	: _.template($('#page-kardex').html()),
+
+	events : {
+		'submit form' : 'generar'
+	},
+
+	initialize : function(){
+		var self = this;
+
+		this.collection = new SimpleStock.Collections.Movimiento({});
+
+		this.collection.on('add', function(model){
+			var u = new SimpleStock.Views.vKardex({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
+
+		this.collection.on('error', function(){
+			app.views.main.clear();
+			app.views.main.renderError();
+		});
+
+		app.routers.gestionar.on('route:inventario', function(){
+			app.views.main.clear();
+			app.views.main.add(self);
+			app.views.header.setTitle('Inventario');
+			self.collection.reset();
+			self.collection.fetch();
+		});
+
+		app.routers.gestionar.on('route:inventarioNuevo', function(){
+			var nuevo = new SimpleStock.Views.EditInventario({
+				collection : self.collection
+			});
+			app.views.main.add(nuevo);
+			app.views.header.setTitle('Inventario');
+		});
+
+	},
+
+	render : function(){
+		this.$el.html(this.template());
+		return this.$el;
+	},
+
+	crear : function(event){
+		event.preventDefault();
+		Backbone.history.navigate('/gestionar/inventario/nuevo', {trigger:true});
+	},
+
+});
+
+
 SimpleStock.Views.EditUsuario = Backbone.View.extend({
 	tagName 	: $('#edit-usuario').attr('data-tag'),
 	className 	: $('#edit-usuario').attr('data-class'),
@@ -547,58 +643,55 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'cancelar'
+		'click .cancelar' : 'hide'
 	},
 
-	initialize : function(){
-		this.isEdit = (typeof this.model != 'undefined');
-	},
-
-	render : function(){
-		if(this.isEdit){
-			var data = this.model.toJSON();
+	render : function(model){
+		if(model){
+			var data = model.toJSON();
 			this.$el.html(this.templateEdit(data));
-			return this.$el;
+			this.model = model;
+			this.isEdit = true;
 		}else{
 			this.$el.html(this.templateNew());
-			return this.$el;
+			this.model = new SimpleStock.Models.Usuario({});
+			this.isEdit = false;
 		}
+		this.$el.show();
+		$('html,body').animate({
+		    scrollTop: this.$el.offset().top
+		}, 500);
 	},
 
-	cancelar : function(event){
+	hide : function(event){
 		if(event) event.preventDefault();
-		this.remove();
+		this.$el.hide();
+		Backbone.history.navigate('/gestionar/usuarios');
 	},
 
 	enviar : function(event){
 		event.preventDefault();
 		var self = this;
 		var data = this.$el.find('form').serializeObject();
-		var model;
+		var model = this.model.set(data);
 
-		if(this.isEdit){
-			model = this.model;
-			model.set(data);
-		}else{
-			model = new SimpleStock.Models.Usuario(data);
-		}
-
-		model.on('sync', function(){
-			if(self.isEdit){
-				Materialize.toast('Usuario modificado', 4000);
-				self.cancelar();
-			}else{
-				Materialize.toast('Usuario creado', 4000);
-				app.collections.usuarios.add(model);
-				self.cancelar();
-			}
+		model.save({}, {
+			wait: true,
+			success : function(){
+				if(self.isEdit){
+					Materialize.toast('Usuario modificado', 4000);
+					self.hide();
+				}else{
+					Materialize.toast('Usuario creado', 4000);
+					app.collections.usuarios.add(model);
+					app.views.usuarios.loadTable();
+					self.hide();
+				}
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
 		});
-
-		model.on('error', function(){
-			Materialize.toast('El usuario ya existe', 4000);
-		});
-
-		model.save();
 	}
 
 });
@@ -615,40 +708,24 @@ SimpleStock.Views.Usuarios = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		app.collections.usuarios.on('add', function(model){
-			var u = new SimpleStock.Views.Usuario({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		this.editer = new SimpleStock.Views.EditUsuario();
 
-		app.collections.usuarios.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
+		app.views.main.add(this);
 
 		app.routers.gestionar.on('route:usuarios', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
+			app.views.main.show(self);
 			app.views.header.setTitle('Usuarios');
-			app.collections.usuarios.reset();
-			app.collections.usuarios.fetch();
+			self.loadTable();
 		});
 
 		app.routers.gestionar.on('route:usuarioNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditUsuario();
-			app.views.main.add(nuevo);
-			app.views.header.setTitle('Usuarios');
+			self.editer.render();
 		});
 
 		app.routers.gestionar.on('route:usuarioEditar', function(){
 			var model = app.collections.usuarios.get(self.editId);
 			if(model){
-				var nuevo = new SimpleStock.Views.EditUsuario({
-					model : model,
-				});
-				app.views.main.add(nuevo);
-				app.views.header.setTitle('Usuarios');
+				self.editer.render(model);
 			}else{
 				Backbone.history.navigate('/gestionar/usuarios');
 				Materialize.toast('El usuario no existe', 4000);
@@ -658,12 +735,24 @@ SimpleStock.Views.Usuarios = Backbone.View.extend({
 
 	render : function(){
 		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
 		return this.$el;
 	},
 
 	crear : function(event){
 		event.preventDefault();
 		Backbone.history.navigate('/gestionar/usuarios/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.usuarios.each(function(model, i){
+			var u = new SimpleStock.Views.Usuario({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
 	},
 
 });
@@ -788,6 +877,18 @@ SimpleStock.Views.Login = Backbone.View.extend({
 
 	initialize : function(){
 		var self = this;
+
+		app.routers.base.on('route:login', function(){
+			if(app.isLogged()){
+				Backbone.history.navigate('/home', {trigger: true});
+			}else{
+				self.cerrar();
+			}
+		});
+
+		app.routers.base.on('route:home', function(){
+			self.abrir();
+		});
 	},
 
 	render : function(){
@@ -833,12 +934,13 @@ SimpleStock.Views.Main = Backbone.View.extend({
 	template 	: _.template($('#sserror').html()),
 
 	initialize : function(){
+		this.pages = [];
 		var self = this;
 		app.routers.base.on('route:home', function(){
-			self.clear();
+			self.clean();
 		});
 		app.routers.base.on('route:login', function(){
-			self.clear();
+			self.clean();
 		});
 	},
 
@@ -847,79 +949,29 @@ SimpleStock.Views.Main = Backbone.View.extend({
 	},
 
 	add : function(view){
+		view.$el.hide();
 		this.$el.append(view.render());
+		this.pages.push(view);
 	},
 
-	clear : function(){
-		this.$el.html('');
+	clean : function(){
+		_(this.pages).each(function(view, index) {
+			view.$el.hide();
+		});
+	},
+
+	show : function(view){
+		this.clean();
+		view.$el.show();
 	},
 
 	renderError : function(){
+		this.clean();
 		this.$el.html(this.template());
 	}
 
 });
 
-
-SimpleStock.Views.Registro = Backbone.View.extend({
-	tagName 	: $('#ssregistro').attr('data-tag'),
-	className 	: $('#ssregistro').attr('data-class'),
-	template 	: _.template($('#ssregistro').html()),
-
-	events : {
-		'submit form' : 'enviar'
-	},
-
-	initialize : function(){
-		var self = this;
-
-		app.routers.registrar.on('route:entrada', function(){
-			app.views.main.clear();
-			app.views.header.setTitle('Entrada');
-			self.tipo = 'entrada';
-			app.views.main.add(self);
-		});
-
-		app.routers.registrar.on('route:salida', function(){
-			app.views.main.clear();
-			app.views.header.setTitle('Salida');
-			self.tipo = 'salida';
-			app.views.main.add(self);
-		});
-	},
-
-	render : function(){
-		var data = {};
-		if(this.tipo=='entrada'){
-			data.strtipo = 'Entrada';
-		}else{
-			data.strtipo = 'Salida';
-		}
-		this.$el.html(this.template(data));
-		return this.$el;
-	},
-
-	enviar : function(event){
-		event.preventDefault();
-
-		var self = this;
-		var data = this.$el.find('form').serializeObject();
-		var model = new SimpleStock.Models.Movimiento(data);
-
-		debugger;
-		model.set('tipo', self.tipo);
-
-		model.on('sync', function(){
-			Materialize.toast('Registro Satisfactorio', 4000);
-		});
-
-		model.on('error', function(){
-			Materialize.toast('No se pudo registrar', 4000);
-		});
-
-		model.save();
-	}
-});
 
 SimpleStock.Routers.Base = Backbone.Router.extend({
 
@@ -1070,6 +1122,7 @@ app.models.actual = new SimpleStock.Models.Periodo({});
 app.collections.usuarios = new SimpleStock.Collections.Usuarios({});
 app.collections.categorias = new SimpleStock.Collections.Categorias({});
 app.collections.productos = new SimpleStock.Collections.Productos({});
+app.collections.periodos = new SimpleStock.Collections.Periodos({});
 
 //Routers
 app.routers.base = new SimpleStock.Routers.Base({});
@@ -1086,20 +1139,20 @@ app.views.footer = new SimpleStock.Views.Footer({});
 
 //Verifica la sesion del usuario
 app.isLogged = function(){
-	if(!app.models.login.has('id')){
-		Backbone.history.navigate('/', {trigger: true});
-	}
+	return app.models.login.has('id');
 };
 
 //Cerrar aplicación
 app.reset = function(){
 	app.models.actual.clear();
+
 	app.collections.usuarios.reset();
 	app.collections.categorias.reset();
+	app.collections.productos.reset();
 	
-	app.views.header.remove();
-	app.views.main.remove();
-	app.views.footer.remove();
+	app.views.main.clean();
+
+	Backbone.history.navigate('/', {trigger: true});
 };
 
 
@@ -1107,10 +1160,9 @@ app.reset = function(){
 app.load = function(successCall, errorCall){
 	var contSuccess = 0;
 	var contError = 0;
-
 	var success = function(){
 		contSuccess ++;
-		if(contSuccess==4) successCall();
+		if(contSuccess==5) successCall();
 	};
 	var error = function(){
 		contError ++;
@@ -1133,46 +1185,39 @@ app.load = function(successCall, errorCall){
 		success : success,
 		error : error,
 	});
+	app.collections.periodos.fetch({
+		success : success,
+		error : error,
+	});
 };
 
 
 //Inicializa la aplicación
 app.init = function() {
-
-	app.views.header.render().appendTo('body');
-	app.views.main.render().appendTo('body');
-	app.views.footer.render().appendTo('body');
-
-	app.models.login.on('destroy', function(){
-		app.views.login.cerrar();
-		app.reset();
-		Backbone.history.navigate('/');
-	});
-
 	app.load(function(){
-		app.views.usuarios = new SimpleStock.Views.Usuarios({
-			collection : app.collections.usuarios
-		});
-		app.views.categorias = new SimpleStock.Views.Categorias({
-			collection : app.collections.categorias
-		});
-		app.views.productos = new SimpleStock.Views.Productos({});
 
-		app.views.registro = new SimpleStock.Views.Registro({});
-
-		app.views.inventario = new SimpleStock.Views.Inventarios({});
-
-		app.views.login.abrir();
+		Backbone.history.navigate('/home', {trigger: true});
 	}, function(){
-		app.views.login.abrir();
+
 		app.views.main.renderError();
 	});
 };
 
 //Lanza la aplicación
 $(document).ready(function($){
+	
+	app.models.login.on('destroy', app.reset);
 
 	app.views.login.render().appendTo('body');
+	app.views.header.render().appendTo('body');
+	app.views.main.render().appendTo('body');
+	app.views.footer.render().appendTo('body');
+
+	app.views.usuarios = new SimpleStock.Views.Usuarios({});
+	app.views.categorias = new SimpleStock.Views.Categorias({});
+	app.views.productos = new SimpleStock.Views.Productos({});
+	app.views.inventario = new SimpleStock.Views.Inventarios({});
+	app.views.registro = new SimpleStock.Views.Registro({});
 
 	app.models.login.fetch({
 		success: function(){

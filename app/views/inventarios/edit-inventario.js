@@ -6,13 +6,16 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'cancelar'
+		'click .cancelar' : 'hide'
 	},
 
 	render : function(){
-		var self = this;
 		this.$el.html(this.templateNew());
-		return this.$el;
+		this.model = new SimpleStock.Models.Inventario({});
+		this.$el.show();
+		$('html,body').animate({
+		    scrollTop: this.$el.offset().top
+		}, 500);
 	},
 
 	cancelar : function(event){
@@ -24,31 +27,30 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 	enviar : function(event){
 		event.preventDefault();
 		var self = this;
-
 		var data = this.$el.find('form').serializeObject();
-		model = new SimpleStock.Models.Inventario(data);
-		var p = app.collections.productos.where({codigo: data.codigo});
+		var model = this.model.set(data);
 
-		if(p.length===0){
+		var pro = app.collections.productos.findWhere({codigo: data.codigo});
+		if(pro){
+			model.set('idproducto', model.get('id'));
+			model.set('idperiodo', 1);
+		}else{
 			Materialize.toast('El producto no existe', 4000);
-			return;
+			return false;
 		}
 
-		model.set('idproducto', p[0].id);
-		model.set('idperiodo', 1);
-
-		model.save();
-
-		model.on('sync', function(){
-			Materialize.toast('Inventario registrado', 4000);
-			self.collection.add(model);
-			self.cancelar();
+		model.save({}, {
+			wait: true,
+			success : function(){
+				Materialize.toast('Inventario registrado', 4000);
+				app.collections.inventarios.add(model);
+				app.views.inventarios.loadTable();
+				self.hide();
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
 		});
-
-		model.on('error', function(){
-			Materialize.toast('El producto ya esta inventariado', 4000);
-		});
-
 	}
 
 });

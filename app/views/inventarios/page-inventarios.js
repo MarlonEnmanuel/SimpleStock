@@ -11,48 +11,42 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		this.collection = new SimpleStock.Collections.Inventarios({});
+		this.editer = new SimpleStock.Views.EditInventario();
 
-		this.collection.on('add', function(model){
-			var u = new SimpleStock.Views.Inventario({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		app.views.main.add(this);
 
-		this.collection.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
-
-		this.collection.fetch();
-
-		app.routers.gestionar.on('route:inventario', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
+		app.routers.gestionar.on('route:inventarios', function(){
+			app.views.main.show(self);
 			app.views.header.setTitle('Inventario');
-			self.collection.reset();
-			self.collection.fetch();
+			self.loadTable();
 		});
 
-		app.routers.gestionar.on('route:inventarioNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditInventario({
-				collection : self.collection
-			});
-			app.views.main.add(nuevo);
+		app.routers.gestionar.on('route:usuarioNuevo', function(){
+			self.editer.render();
 			app.views.header.setTitle('Inventario');
 		});
-
 	},
 
 	render : function(){
 		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
 		return this.$el;
 	},
 
 	crear : function(event){
 		event.preventDefault();
 		Backbone.history.navigate('/gestionar/inventario/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.usuarios.each(function(model, i){
+			var u = new SimpleStock.Views.Inventario({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
 	},
 
 });

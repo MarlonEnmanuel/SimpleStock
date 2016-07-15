@@ -11,18 +11,20 @@ SimpleStock.Views.Registro = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
+		app.views.main.add(this);
+
 		app.routers.registrar.on('route:entrada', function(){
-			app.views.main.clear();
-			app.views.header.setTitle('Entrada');
 			self.tipo = 'entrada';
-			app.views.main.add(self);
+			self.render();
+			app.views.main.show(self);
+			app.views.header.setTitle('Entrada');
 		});
 
 		app.routers.registrar.on('route:salida', function(){
-			app.views.main.clear();
-			app.views.header.setTitle('Salida');
 			self.tipo = 'salida';
-			app.views.main.add(self);
+			self.render();
+			app.views.main.show(self);
+			app.views.header.setTitle('Salida');
 		});
 	},
 
@@ -44,17 +46,15 @@ SimpleStock.Views.Registro = Backbone.View.extend({
 		var data = this.$el.find('form').serializeObject();
 		var model = new SimpleStock.Models.Movimiento(data);
 
-		debugger;
 		model.set('tipo', self.tipo);
 
-		model.on('sync', function(){
-			Materialize.toast('Registro Satisfactorio', 4000);
+		model.save({}, {
+			success : function(){
+				Materialize.toast('Registro Satisfactorio', 4000);
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
 		});
-
-		model.on('error', function(){
-			Materialize.toast('No se pudo registrar', 4000);
-		});
-
-		model.save();
 	}
 });

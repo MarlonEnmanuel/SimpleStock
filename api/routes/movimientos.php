@@ -58,10 +58,10 @@ $app->group('/api/movimientos', function(){
 		$Mov->saldoini = $Inv->saldo;
 		if($Mov->tipo == 'entrada'){
 			$Mov->saldofin = $Mov->saldoini + $Mov->cantidad;
-			throw new Exception("No puede sacar más de lo que existe", 400);
-			
 		}else{
 			$Mov->saldofin = $Mov->saldoini - $Mov->cantidad;
+			if($Mov->saldofin<0)
+				throw new Exception("No puede sacar más de lo que existe", 400);
 		}
 
 		$Inv->saldo = $Mov->saldofin;

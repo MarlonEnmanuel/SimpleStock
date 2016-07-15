@@ -11,6 +11,18 @@ SimpleStock.Views.Login = Backbone.View.extend({
 
 	initialize : function(){
 		var self = this;
+
+		app.routers.base.on('route:login', function(){
+			if(app.isLogged()){
+				Backbone.history.navigate('/home', {trigger: true});
+			}else{
+				self.cerrar();
+			}
+		});
+
+		app.routers.base.on('route:home', function(){
+			self.abrir();
+		});
 	},
 
 	render : function(){
