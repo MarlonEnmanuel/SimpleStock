@@ -1,13 +1,13 @@
 
-SimpleStock.Views.EditUsuario = Backbone.View.extend({
-	tagName 	: $('#edit-usuario').attr('data-tag'),
-	className 	: $('#edit-usuario').attr('data-class'),
-	templateNew : _.template($('#new-usuario').html()),
-	templateEdit: _.template($('#edit-usuario').html()),
+SimpleStock.Views.EditPeriodo = Backbone.View.extend({
+	tagName 	: $('#edit-periodo').attr('data-tag'),
+	className 	: $('#edit-periodo').attr('data-class'),
+	templateNew : _.template($('#new-periodo').html()),
+	templateEdit: _.template($('#edit-periodo').html()),
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'hide'
+		'click .cancelar' : 'hide',
 	},
 
 	render : function(model){
@@ -18,19 +18,20 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 			this.isEdit = true;
 		}else{
 			this.$el.html(this.templateNew());
-			this.model = new SimpleStock.Models.Usuario({});
+			this.model = new SimpleStock.Models.Periodo({});
 			this.isEdit = false;
 		}
 		this.$el.show();
 		$('html,body').animate({
 		    scrollTop: this.$el.offset().top
 		}, 500);
+		this.$el.find('select').material_select();
 	},
 
 	hide : function(event){
 		if(event) event.preventDefault();
 		this.$el.hide();
-		Backbone.history.navigate('/gestionar/usuarios');
+		Backbone.history.navigate('/gestionar/periodos');
 	},
 
 	enviar : function(event){
@@ -43,12 +44,13 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 			wait: true,
 			success : function(){
 				if(self.isEdit){
-					Materialize.toast('Usuario modificado', 4000);
+					Materialize.toast('Periodo modificado', 4000);
 					self.hide();
 				}else{
-					Materialize.toast('Usuario creado, la contraseña es 123456', 10000);
-					app.collections.usuarios.add(model);
-					app.views.usuarios.loadTable();
+					Materialize.toast('Periodo creado', 4000);
+					app.collections.periodos.add(model);
+					app.models.actual = model;
+					app.views.periodos.loadTable();
 					self.hide();
 				}
 			},

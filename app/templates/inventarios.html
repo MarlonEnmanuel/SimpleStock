@@ -1,5 +1,20 @@
 
 <script type="text/template" id="page-inventarios" data-class="page-inventarios container" data-tag="div">
+	<div class="section">
+		<div class="row">
+			<div class="input-field col s12 m6">
+	        	<select name="idperiodo" id="ip-idperiodo">
+					<option value="" disabled selected>Seleccione un periodo</option>
+					<% app.collections.periodos.each(function(model){ %>
+						<option value="<%=model.get('id')%>" <%=(app.models.actual.get('id')==model.get('id'))?'selected':''%> > 
+							<%= model.get('nombre') %> <%= (model.get('actual'))?' - ACTUAL':''  %>
+						</option>
+					<% }); %>
+				</select>
+				<label>Eliga un periodo</label>
+	        </div>
+		</div>
+	</div>
     <div class="section">
 		<table class="bordered responsive-table">
 			<thead>

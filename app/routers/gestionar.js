@@ -23,17 +23,13 @@ SimpleStock.Routers.Gestionar = Backbone.Router.extend({
 		"gestionar/productos/editar/:id" : "productoEditar",
 		"gestionar/productos/editar/:id/" : "productoEditar",
 
-		"gestionar/inventario" : "inventario",
-		"gestionar/inventario/" : "inventario",
-		"gestionar/inventario/nuevo" : "inventarioNuevo",
-		"gestionar/inventario/nuevo/" : "inventarioNuevo",
 
-		//"gestionar/periodos" : "periodos",
-		//"gestionar/periodos/" : "periodos",
-		//"gestionar/periodos/nuevo" : "periodoNuevo",
-		//"gestionar/periodos/nuevo/" : "periodoNuevo",
-		//"gestionar/periodos/editar/:id" : "periodoEditar",
-		//"gestionar/periodos/editar/:id/" : "periodoEditar",
+		"gestionar/periodos" : "periodos",
+		"gestionar/periodos/" : "periodos",
+		"gestionar/periodos/nuevo" : "periodoNuevo",
+		"gestionar/periodos/nuevo/" : "periodoNuevo",
+		"gestionar/periodos/editar/:id" : "periodoEditar",
+		"gestionar/periodos/editar/:id/" : "periodoEditar",
 	},
 
 
@@ -72,11 +68,15 @@ SimpleStock.Routers.Gestionar = Backbone.Router.extend({
 		app.views.productos.editId = id;
 	},
 
-	inventarios : function(){
-		$(document).attr('title', 'Gestionar | Inventarios');
+	periodos : function(){
+		$(document).attr('title', 'Gestionar | Periodos');
 	},
-	inventarioNuevo : function(){
-		$(document).attr('title', 'Nuevo | Inventario');
+	periodoNuevo : function(){
+		$(document).attr('title', 'Nuevo | Periodos');
+	},
+	periodoEditar : function(id){
+		$(document).attr('title', 'Editar | Periodos');
+		app.views.periodos.editId = id;
 	},
 
 });

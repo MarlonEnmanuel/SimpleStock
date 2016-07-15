@@ -258,10 +258,10 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 		}, 500);
 	},
 
-	cancelar : function(event){
+	hide : function(event){
 		if(event) event.preventDefault();
-		this.remove();
-		Backbone.history.navigate('/gestionar/inventario', {trigger: true});
+		this.$el.hide();
+		Backbone.history.navigate('/inventarios');
 	},
 
 	enviar : function(event){
@@ -272,18 +272,15 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 
 		var pro = app.collections.productos.findWhere({codigo: data.codigo});
 		if(pro){
-			model.set('idproducto', model.get('id'));
-			model.set('idperiodo', 1);
+			model.set('idproducto', pro.get('id'));
 		}else{
 			Materialize.toast('El producto no existe', 4000);
 			return false;
 		}
 
 		model.save({}, {
-			wait: true,
 			success : function(){
 				Materialize.toast('Inventario registrado', 4000);
-				app.collections.inventarios.add(model);
 				app.views.inventarios.loadTable();
 				self.hide();
 			},
@@ -308,16 +305,30 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 		var self = this;
 
 		this.editer = new SimpleStock.Views.EditInventario();
+		this.collection = new SimpleStock.Collections.Inventarios();
 
 		app.views.main.add(this);
 
-		app.routers.gestionar.on('route:inventarios', function(){
-			app.views.main.show(self);
-			app.views.header.setTitle('Inventario');
+		this.$el.find('#ip-idperiodo').change(function(){
 			self.loadTable();
+			self.editer.hide();
 		});
 
-		app.routers.gestionar.on('route:usuarioNuevo', function(){
+		this.collection.on('add', function(model){
+			var u = new SimpleStock.Views.Inventario({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
+
+		app.routers.registrar.on('route:inventarios', function(){
+			app.views.main.show(self);
+			app.views.header.setTitle('Inventarios');
+			self.loadTable();
+			self.$el.find('select').material_select();
+		});
+
+		app.routers.registrar.on('route:inventarioNuevo', function(){
 			self.editer.render();
 			app.views.header.setTitle('Inventario');
 		});
@@ -331,18 +342,22 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 
 	crear : function(event){
 		event.preventDefault();
-		Backbone.history.navigate('/gestionar/inventario/nuevo', {trigger:true});
+		var idperiodo = this.$el.find('#ip-idperiodo').val();
+		if(app.models.actual.get('id')==idperiodo){
+			Backbone.history.navigate('/inventarios/nuevo', {trigger:true});
+		}
 	},
 
 	loadTable : function(){
 		var self = this;
 		self.$el.find('.container').empty();
-		app.collections.usuarios.each(function(model, i){
-			var u = new SimpleStock.Views.Inventario({
-				model : model
-			});
-			u.render().appendTo(self.$el.find('.container'));
-		});
+		var idperiodo = self.$el.find('#ip-idperiodo').val();
+		
+		if(idperiodo>0){
+			self.collection.reset();
+			var url = '/api/inventarios/periodo/'+idperiodo+'/';
+			self.collection.fetch({url: url});
+		}
 	},
 
 });
@@ -362,6 +377,176 @@ SimpleStock.Views.Inventario = Backbone.View.extend({
 	render : function(){
 		this.$el.html(this.template(this.model.toJSON()));
 		return this.$el;
+	},
+	
+});
+
+SimpleStock.Views.EditPeriodo = Backbone.View.extend({
+	tagName 	: $('#edit-periodo').attr('data-tag'),
+	className 	: $('#edit-periodo').attr('data-class'),
+	templateNew : _.template($('#new-periodo').html()),
+	templateEdit: _.template($('#edit-periodo').html()),
+
+	events : {
+		'submit form' : 'enviar',
+		'click .cancelar' : 'hide',
+	},
+
+	render : function(model){
+		if(model){
+			var data = model.toJSON();
+			this.$el.html(this.templateEdit(data));
+			this.model = model;
+			this.isEdit = true;
+		}else{
+			this.$el.html(this.templateNew());
+			this.model = new SimpleStock.Models.Periodo({});
+			this.isEdit = false;
+		}
+		this.$el.show();
+		$('html,body').animate({
+		    scrollTop: this.$el.offset().top
+		}, 500);
+		this.$el.find('select').material_select();
+	},
+
+	hide : function(event){
+		if(event) event.preventDefault();
+		this.$el.hide();
+		Backbone.history.navigate('/gestionar/periodos');
+	},
+
+	enviar : function(event){
+		event.preventDefault();
+		var self = this;
+		var data = this.$el.find('form').serializeObject();
+		var model = this.model.set(data);
+
+		model.save({}, {
+			wait: true,
+			success : function(){
+				if(self.isEdit){
+					Materialize.toast('Periodo modificado', 4000);
+					self.hide();
+				}else{
+					Materialize.toast('Periodo creado', 4000);
+					app.collections.periodos.add(model);
+					app.models.actual = model;
+					app.views.periodos.loadTable();
+					self.hide();
+				}
+			},
+			error : function(x, s){
+				Materialize.toast(s.responseText);
+			},
+		});
+	}
+
+});
+
+SimpleStock.Views.Periodos = Backbone.View.extend({
+	tagName 	: $('#page-periodos').attr('data-tag'),
+	className 	: $('#page-periodos').attr('data-class'),
+	template 	: _.template($('#page-periodos').html()),
+
+	events : {
+		'click .crear' : 'crear'
+	},
+
+	initialize : function(){
+		var self = this;
+
+		this.editer = new SimpleStock.Views.EditPeriodo();
+
+		app.views.main.add(this);
+
+		app.routers.gestionar.on('route:periodos', function(){
+			app.views.main.show(self);
+			app.views.header.setTitle('Periodos');
+			self.loadTable();
+		});
+
+		app.routers.gestionar.on('route:periodoNuevo', function(){
+			self.editer.render();
+		});
+
+		app.routers.gestionar.on('route:periodoEditar', function(){
+			var model = app.collections.periodos.get(self.editId);
+			if(model){
+				self.editer.render(model);
+			}else{
+				Backbone.history.navigate('/gestionar/periodos');
+				Materialize.toast('El periodo no existe', 4000);
+			}
+		});
+	},
+
+	render : function(){
+		this.$el.html(this.template());
+		this.$el.append(this.editer.$el);
+		return this.$el;
+	},
+
+	crear : function(event){
+		event.preventDefault();
+		Backbone.history.navigate('/gestionar/periodos/nuevo', {trigger:true});
+	},
+
+	loadTable : function(){
+		var self = this;
+		self.$el.find('.container').empty();
+		app.collections.periodos.each(function(model, i){
+			var u = new SimpleStock.Views.Periodo({
+				model : model
+			});
+			u.render().appendTo(self.$el.find('.container'));
+		});
+	},
+
+});
+
+SimpleStock.Views.Periodo = Backbone.View.extend({
+	tagName 	: $('#view-periodo').attr('data-tag'),
+	className 	: $('#view-periodo').attr('data-class'),
+	template 	: _.template($('#view-periodo').html()),
+
+	events : {
+		'click .editar' : 'editar',
+		'click .finalizar' : 'finalizar',
+	},
+
+	initialize : function(){
+		var self = this;
+		self.model.on('sync', function(){
+			self.render();
+		});
+	},
+
+	render : function(){
+		this.$el.html(this.template(this.model.toJSON()));
+		return this.$el;
+	},
+
+	editar : function(event){
+		event.preventDefault();
+		var url = '/gestionar/periodos/editar/'+this.model.get('id');
+		Backbone.history.navigate(url, {trigger: true});
+	},
+
+	finalizar : function(){
+		if(confirm('Esta acción finalizará el periodo actual, por lo tanto ya no podrá hacer operaciones sobre este. ¿Desea continuar?')){
+			this.model.set({actual : false});
+			this.model.save({},{
+				url : '/api/periodos/actual/cerrar/',
+				success : function(){
+					Materialize.toast('Periodo finalizado, ahora puede crear uno nuevo', 6000);
+					app.models.actual.clear();
+				},
+				error : function(x, s){
+					Materialize.toast(s.responseText);
+				},
+			});
+		}
 	},
 	
 });
@@ -682,7 +867,7 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 					Materialize.toast('Usuario modificado', 4000);
 					self.hide();
 				}else{
-					Materialize.toast('Usuario creado', 4000);
+					Materialize.toast('Usuario creado, la contraseña es 123456', 10000);
 					app.collections.usuarios.add(model);
 					app.views.usuarios.loadTable();
 					self.hide();
@@ -1016,17 +1201,13 @@ SimpleStock.Routers.Gestionar = Backbone.Router.extend({
 		"gestionar/productos/editar/:id" : "productoEditar",
 		"gestionar/productos/editar/:id/" : "productoEditar",
 
-		"gestionar/inventario" : "inventario",
-		"gestionar/inventario/" : "inventario",
-		"gestionar/inventario/nuevo" : "inventarioNuevo",
-		"gestionar/inventario/nuevo/" : "inventarioNuevo",
 
-		//"gestionar/periodos" : "periodos",
-		//"gestionar/periodos/" : "periodos",
-		//"gestionar/periodos/nuevo" : "periodoNuevo",
-		//"gestionar/periodos/nuevo/" : "periodoNuevo",
-		//"gestionar/periodos/editar/:id" : "periodoEditar",
-		//"gestionar/periodos/editar/:id/" : "periodoEditar",
+		"gestionar/periodos" : "periodos",
+		"gestionar/periodos/" : "periodos",
+		"gestionar/periodos/nuevo" : "periodoNuevo",
+		"gestionar/periodos/nuevo/" : "periodoNuevo",
+		"gestionar/periodos/editar/:id" : "periodoEditar",
+		"gestionar/periodos/editar/:id/" : "periodoEditar",
 	},
 
 
@@ -1065,11 +1246,15 @@ SimpleStock.Routers.Gestionar = Backbone.Router.extend({
 		app.views.productos.editId = id;
 	},
 
-	inventarios : function(){
-		$(document).attr('title', 'Gestionar | Inventarios');
+	periodos : function(){
+		$(document).attr('title', 'Gestionar | Periodos');
 	},
-	inventarioNuevo : function(){
-		$(document).attr('title', 'Nuevo | Inventario');
+	periodoNuevo : function(){
+		$(document).attr('title', 'Nuevo | Periodos');
+	},
+	periodoEditar : function(id){
+		$(document).attr('title', 'Editar | Periodos');
+		app.views.periodos.editId = id;
 	},
 
 });
@@ -1082,6 +1267,11 @@ SimpleStock.Routers.Registrar = Backbone.Router.extend({
 
 		"registrar/salida" : "salida",
 		"registrar/salida/" : "salida",
+
+		"inventarios" : "inventarios",
+		"inventarios/" : "inventarios",
+		"inventarios/nuevo" : "inventarioNuevo",
+		"inventarios/nuevo/" : "inventarioNuevo",
 	},
 
 	entrada : function(){
@@ -1090,6 +1280,14 @@ SimpleStock.Routers.Registrar = Backbone.Router.extend({
 
 	salida : function(){
 		$(document).attr('title', 'Registrar | Salida');
+	},
+
+	inventarios : function(){
+		$(document).attr('title', 'Gestionar | Inventarios');
+	},
+	
+	inventarioNuevo : function(){
+		$(document).attr('title', 'Nuevo | Inventario');
 	},
 
 });
@@ -1162,7 +1360,7 @@ app.load = function(successCall, errorCall){
 	var contError = 0;
 	var success = function(){
 		contSuccess ++;
-		if(contSuccess==5) successCall();
+		if(contSuccess==4) successCall();
 	};
 	var error = function(){
 		contError ++;
@@ -1170,8 +1368,6 @@ app.load = function(successCall, errorCall){
 	};
 	app.models.actual.fetch({
 		url : '/api/periodos/actual/',
-		success : success,
-		error : error,
 	});
 	app.collections.usuarios.fetch({
 		success : success,
@@ -1196,6 +1392,13 @@ app.load = function(successCall, errorCall){
 app.init = function() {
 	app.load(function(){
 
+		app.views.usuarios = new SimpleStock.Views.Usuarios({});
+		app.views.categorias = new SimpleStock.Views.Categorias({});
+		app.views.productos = new SimpleStock.Views.Productos({});
+		app.views.inventarios = new SimpleStock.Views.Inventarios({});
+		app.views.registro = new SimpleStock.Views.Registro({});
+		app.views.periodos = new SimpleStock.Views.Periodos({});
+
 		Backbone.history.navigate('/home', {trigger: true});
 	}, function(){
 
@@ -1212,12 +1415,6 @@ $(document).ready(function($){
 	app.views.header.render().appendTo('body');
 	app.views.main.render().appendTo('body');
 	app.views.footer.render().appendTo('body');
-
-	app.views.usuarios = new SimpleStock.Views.Usuarios({});
-	app.views.categorias = new SimpleStock.Views.Categorias({});
-	app.views.productos = new SimpleStock.Views.Productos({});
-	app.views.inventario = new SimpleStock.Views.Inventarios({});
-	app.views.registro = new SimpleStock.Views.Registro({});
 
 	app.models.login.fetch({
 		success: function(){

@@ -62,15 +62,21 @@
 
                 <li><div class="divider"></div></li>
 
+                <li>
+                    <a href="/inventarios">Inventario</a></li>
+                </li>
+
+                <li><div class="divider"></div></li>
+
                 <li class="no-padding">
                     <ul class="collapsible collapsible-accordion">
                         <li>
                             <a class="collapsible-header">Gestionar</a>
                             <div class="collapsible-body">
                                 <ul>
+                                    <li><a href="/gestionar/periodos">Periodos</a></li>
                                     <li><a href="/gestionar/categorias">Categorías</a></li>
                                     <li><a href="/gestionar/productos">Productos</a></li>
-                                    <li><a href="/gestionar/inventario">Inventario</a></li>
                                     <% if(typeof id != 'undefined'){ %>
                                         <% if(id==1 && user=='administrador'){ %>
                                             <li><a href="/gestionar/usuarios">Usuarios</a></li>

@@ -18,10 +18,10 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 		}, 500);
 	},
 
-	cancelar : function(event){
+	hide : function(event){
 		if(event) event.preventDefault();
-		this.remove();
-		Backbone.history.navigate('/gestionar/inventario', {trigger: true});
+		this.$el.hide();
+		Backbone.history.navigate('/inventarios');
 	},
 
 	enviar : function(event){
@@ -32,18 +32,15 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 
 		var pro = app.collections.productos.findWhere({codigo: data.codigo});
 		if(pro){
-			model.set('idproducto', model.get('id'));
-			model.set('idperiodo', 1);
+			model.set('idproducto', pro.get('id'));
 		}else{
 			Materialize.toast('El producto no existe', 4000);
 			return false;
 		}
 
 		model.save({}, {
-			wait: true,
 			success : function(){
 				Materialize.toast('Inventario registrado', 4000);
-				app.collections.inventarios.add(model);
 				app.views.inventarios.loadTable();
 				self.hide();
 			},

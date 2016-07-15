@@ -47,7 +47,7 @@ app.load = function(successCall, errorCall){
 	var contError = 0;
 	var success = function(){
 		contSuccess ++;
-		if(contSuccess==5) successCall();
+		if(contSuccess==4) successCall();
 	};
 	var error = function(){
 		contError ++;
@@ -55,8 +55,6 @@ app.load = function(successCall, errorCall){
 	};
 	app.models.actual.fetch({
 		url : '/api/periodos/actual/',
-		success : success,
-		error : error,
 	});
 	app.collections.usuarios.fetch({
 		success : success,
@@ -81,6 +79,13 @@ app.load = function(successCall, errorCall){
 app.init = function() {
 	app.load(function(){
 
+		app.views.usuarios = new SimpleStock.Views.Usuarios({});
+		app.views.categorias = new SimpleStock.Views.Categorias({});
+		app.views.productos = new SimpleStock.Views.Productos({});
+		app.views.inventarios = new SimpleStock.Views.Inventarios({});
+		app.views.registro = new SimpleStock.Views.Registro({});
+		app.views.periodos = new SimpleStock.Views.Periodos({});
+
 		Backbone.history.navigate('/home', {trigger: true});
 	}, function(){
 
@@ -97,12 +102,6 @@ $(document).ready(function($){
 	app.views.header.render().appendTo('body');
 	app.views.main.render().appendTo('body');
 	app.views.footer.render().appendTo('body');
-
-	app.views.usuarios = new SimpleStock.Views.Usuarios({});
-	app.views.categorias = new SimpleStock.Views.Categorias({});
-	app.views.productos = new SimpleStock.Views.Productos({});
-	app.views.inventario = new SimpleStock.Views.Inventarios({});
-	app.views.registro = new SimpleStock.Views.Registro({});
 
 	app.models.login.fetch({
 		success: function(){

@@ -33,18 +33,18 @@ $app->group('/api/inventarios', function(){
 
 		$Inv->inicial 	 = $inputs['inicial'];
 		$Inv->saldo 	 = $inputs['inicial'];
-		$Inv->idperiodo	 = $inputs['idperiodo'];
 		$Inv->idproducto = $inputs['idproducto'];
 
 		$Inv->validate();
 
-		$Per = new Models\Periodo($Inv->idperiodo);
-		$PAD = new Access\Periodo($mysqli, $logger);
-		$PAD->read($Per);
-
 		$Pro = new Models\Producto($Inv->idproducto);
 		$PROAD = new Access\Producto($mysqli, $logger);
 		$PROAD->read($Pro);
+
+		$PAD = new Access\Periodo($mysqli, $logger);
+		$Per = $PAD->search()->getBy('actual', true);
+
+		$Inv->idperiodo = $Per->id;
 
 		$list = $IAD->search();
 		$listPer = $list->searchBy('idperiodo', $Inv->idperiodo);
@@ -81,13 +81,14 @@ $app->group('/api/inventarios', function(){
 	/**
 	* Obtener inventarios por periodo
 	*/
-	$this->get('/periodo/{id}', function ($request, $response, $args) {
+	$this->get('/periodo/{id}/', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
 		$login  = &$this->login;
 
 		$IAD = new Access\Inventario($mysqli, $logger);
+
 		$lista = $IAD->search()->searchBy('idperiodo', $args['id']);
 		
 		return $response->withJson($lista->toArray());

@@ -168,7 +168,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `simplestock`;
-INSERT INTO `simplestock`.`periodo` (`idperiodo`, `nombre`, `descrip`, `actual`, `fechini`, `fechfin`, `idusuario`) VALUES (DEFAULT, 'Periodo Inicial', 'Periodo generado automaticamente por el sistema', 1, 'now()', 'NULL', 1);
+INSERT INTO `simplestock`.`periodo` (`idperiodo`, `nombre`, `descrip`, `actual`, `fechini`, `fechfin`, `idusuario`) VALUES (DEFAULT, 'Periodo Inicial', 'Periodo generado automaticamente por el sistema', 1, now(), NULL, 1);
 
 COMMIT;
 

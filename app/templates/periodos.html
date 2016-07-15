@@ -1,0 +1,114 @@
+
+<script type="text/template" id="page-periodos" data-class="page-periodos container" data-tag="div">
+    <div class="section">
+		<table class="bordered responsive-table">
+			<thead>
+				<tr>
+					<th data-field="nombres">Nombre</th>
+					<th data-field="apellidos">Descrip</th>
+					<th data-field="puesto">Inicio</th>
+					<th data-field="fechreg">Fin</th>
+					<th data-field="fechreg">Reg. por</th>
+					<th data-field="fechreg"></th>
+				</tr>
+			</thead>
+			<tbody class="container"></tbody>
+		</table>
+    </div>
+    <br>
+    <div class="section">
+    	<button class="crear waves-effect waves-light btn">Nuevo Periodo</button>
+    </div>
+    <br>
+</script>
+
+
+<script type="text/template" id="view-periodo" data-class="view-periodo" data-tag="tr">
+    <td><%= nombre %></td>
+	<td><%= descrip %></td>
+	<td><%= (new Date(fechini*1000)).toLocaleDateString() %></td>
+	<td><%= fechfin ?(new Date(fechfin*1000)).toLocaleDateString() : '<a class="finalizar" href="#!" title="Finalizar periodo"><i class="material-icons">visibility_off</i></a>' %></td>
+	<td><%= app.collections.usuarios.get(idusuario).get('user') %></td>
+	<td><a class="editar" href="#!" title="Modificar periodo"><i class="material-icons">mode_edit</i></a></td>
+</script>
+
+
+<script type="text/template" id="new-periodo" data-class="new-periodo" data-tag="div">
+    <div class="row">
+    	<div class="col s12">
+    		<h4>Registrar Nuevo Periodo</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-nombre" type="text" class="validate" name="nombre">
+	        	<label for="ip-nombre">Nombre</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s12">
+	        	<input id="ip-descrip" type="text" class="validate" name="descrip">
+	        	<label for="ip-descrip">Descripción</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-saldo" type="checkbox" name="saldos"/>
+      			<label for="ip-saldo">Usar saldos finales de</label>
+	        </div>
+	        <div class="input-field col s6">
+	        	<select name="idperiodo" id="ip-idperiodo">
+					<option value="" disabled selected>Seleccione un periodo</option>
+					<% app.collections.periodos.each(function(model){ %>
+						<option value="<%=model.get('id')%>" <%=(app.models.actual.get('id')==model.get('id'))?'selected':''%> > 
+							<%= model.get('nombre') %>
+						</option>
+					<% }); %>
+				</select>
+				<label>Eliga un periodo</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>
+
+
+<script type="text/template" id="edit-periodo" data-class="edit-periodo" data-tag="div">
+    <div class="row">
+    	<div class="col s12">
+    		<h4>Modificar Periodo</h4>
+    	</div>
+    </div>
+    <div class="divider"></div>
+    <form class="section">
+	    <div class="row">
+	        <div class="input-field col s6">
+	        	<input id="ip-nombre" type="text" class="validate" name="nombre" value="<%=nombre%>">
+	        	<label for="ip-nombre" class="active">Nombre</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="input-field col s12">
+	        	<input id="ip-descrip" type="text" class="validate" name="descrip" value="<%=descrip%>">
+	        	<label for="ip-descrip" class="active">Descripción</label>
+	        </div>
+	    </div>
+	    <div class="row">
+	    	<div class="input-field col s6 form-cancel">
+	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	        </div>
+	        <div class="input-field col s6">
+	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        </div>
+	    </div>
+	</form>
+</script>
