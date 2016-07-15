@@ -1,44 +1,31 @@
 
-SimpleStock.Views.Kardex = Backbone.View.extend({
-	tagName 	: $('#page-kardex').attr('data-tag'),
-	className 	: $('#page-kardex').attr('data-class'),
-	template 	: _.template($('#page-kardex').html()),
+SimpleStock.Views.Kardexs = Backbone.View.extend({
+	tagName 	: $('#page-kardexs').attr('data-tag'),
+	className 	: $('#page-kardexs').attr('data-class'),
+	template 	: _.template($('#page-kardexs').html()),
 
 	events : {
-		'submit form' : 'generar'
+		'submit form' : 'loadTable'
 	},
 
 	initialize : function(){
 		var self = this;
 
-		this.collection = new SimpleStock.Collections.Movimiento({});
+		this.collection = new SimpleStock.Collections.Movimientos();
+
+		app.views.main.add(this);
 
 		this.collection.on('add', function(model){
-			var u = new SimpleStock.Views.vKardex({
+			var u = new SimpleStock.Views.Kardex({
 				model : model
 			});
 			u.render().appendTo(self.$el.find('.container'));
 		});
 
-		this.collection.on('error', function(){
-			app.views.main.clear();
-			app.views.main.renderError();
-		});
-
-		app.routers.gestionar.on('route:inventario', function(){
-			app.views.main.clear();
-			app.views.main.add(self);
-			app.views.header.setTitle('Inventario');
-			self.collection.reset();
-			self.collection.fetch();
-		});
-
-		app.routers.gestionar.on('route:inventarioNuevo', function(){
-			var nuevo = new SimpleStock.Views.EditInventario({
-				collection : self.collection
-			});
-			app.views.main.add(nuevo);
-			app.views.header.setTitle('Inventario');
+		app.routers.reportes.on('route:kardex', function(){
+			app.views.main.show(self);
+			app.views.header.setTitle('Kardex');
+			self.$el.find('.cabecera').hide();
 		});
 
 	},
@@ -48,9 +35,35 @@ SimpleStock.Views.Kardex = Backbone.View.extend({
 		return this.$el;
 	},
 
-	crear : function(event){
+	loadTable : function(event){
 		event.preventDefault();
-		Backbone.history.navigate('/gestionar/inventario/nuevo', {trigger:true});
+		var self = this;
+
+		self.$el.find('.container').empty();
+
+		var idinv = self.$el.find('#ip-idinventario').val();
+
+		var minv = new SimpleStock.Models.Inventario();
+
+		minv.on('sync', function(){
+			self.collection.reset();
+			var url = '/api/movimientos/inventario/'+idinv+'/';
+			self.collection.fetch({url: url});
+
+			var pro = app.collections.productos.findWhere({id: minv.get('idproducto')});
+
+			self.$el.find('.cabecera .inicial').text(minv.get('inicial'));
+			self.$el.find('.cabecera .fecha').text((new Date()).toLocaleString());
+			self.$el.find('.cabecera .producto').text(pro.get('codigo')+' - '+pro.get('nombre'));
+			self.$el.find('.cabecera').show();
+		});
+
+		minv.on('error', function(){
+			Materialize.toast('El codigo no existe', 4000);
+		});
+
+		var url2 = '/api/inventarios/'+idinv+'/';
+		minv.fetch({url: url2});
 	},
 
 });

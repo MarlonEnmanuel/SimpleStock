@@ -1,8 +1,8 @@
 
-SimpleStock.Views.Kardex = Backbone.View.extend({
-	tagName 	: $('#view-kardex').attr('data-tag'),
-	className 	: $('#view-kardex').attr('data-class'),
-	template 	: _.template($('#view-kardex').html()),
+SimpleStock.Views.Entrysal = Backbone.View.extend({
+	tagName 	: $('#view-entrysal').attr('data-tag'),
+	className 	: $('#view-entrysal').attr('data-class'),
+	template 	: _.template($('#view-entrysal').html()),
 
 	events : {
 		'click .apunte' : 'apunte',

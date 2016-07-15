@@ -1,39 +1,67 @@
 
-<script type="text/template" id="page-kardex" data-class="page-kardex container" data-tag="div">
-	<form action="section">
+<script type="text/template" id="page-kardexs" data-class="page-kardexs container" data-tag="div">
+	<form action="section datos">
 		<div class="row">
 	    	<div class="input-field col s6 form-cancel">
 	    		<div class="input-field col s6">
-		        	<input id="ip-codigo" type="text" class="validate" name="codigo">
-		        	<label for="ip-codigo">Código de Inventario</label>
+		        	<input id="ip-idinventario" type="text" class="validate" name="ip-idinventario">
+		        	<label for="ip-idinventario">Código de Inventario</label>
 		        </div>
 	        </div>
 	        <div class="input-field col s6">
 	        	<input class="waves-effect waves-light btn" value="Generar" type="submit">
 	        </div>
 	    </div>
-	    <br><br>
+	    <br>
+	    <div class="divider"></div>
 	</form>
     <div class="section">
+    	<div class="cabecera">
+    		<div class="row">
+	    		<div class="col s12">
+	    			<h3>Kardex</h3>
+	    		</div>
+	    	</div>
+	    	<div class="row">
+	    		<div class="col s4">
+	    			<h6><b>Producto</b></h6>
+	    			<p class="producto center-align"></p>
+	    		</div>
+	    		<div class="col s4">
+	    			<h6><b>Stock Inicial</b></h6>
+	    			<p class="inicial center-align"></p>
+	    		</div>
+	    		<div class="col s4">
+	    			<h6><b>Fecha</b></h6>
+	    			<p class="fecha center-align"></p>
+	    		</div>
+	    	</div>
+	    	<div class="divider"></div>
+    	</div>
 		<table class="bordered responsive-table">
 			<thead>
 				<tr>
-					<th data-field="nombres">(new DateTime(fechreg*1000)->toLocalString())</th>
+					<th data-field="nombres">Fecha</th>
+					<th data-field="nombres">Apunte</th>
 					<th data-field="apellidos">Entrada</th>
 					<th data-field="user">Salida</th>
 					<th data-field="puesto">Existencia</th>
-					<th data-field="fechreg">Nombre</th>
-				</tr>
+					<th data-field="fechreg">Usuario</th>
+					<th data-field="fechreg">Guía</th>
+					<th data-field="fechreg">Lote</th>
 			</thead>
 			<tbody class="container"></tbody>
 		</table>
     </div>
 </script>
 
-<script type="text/template" id="view-kardex" data-class="view-categoria" data-tag="tr">
-    <td><%= (new DateTime(fechreg*1000)->toLocalString()) %></td>
+<script type="text/template" id="view-kardex" data-class="view-kardex" data-tag="tr">
+    <td><%= (new Date(fechreg*1000)).toLocaleString() %></td>
+    <td><a class="apunte" href="#!" title="Click para información"><i class="material-icons">info_outline</i></a></td>
 	<td><%= (tipo=='entrada') ? cantidad : '' %></td>
 	<td><%= (tipo=='salida') ? cantidad : '' %></td>
 	<td><%= saldofin %></td>
-	<td><%= app.collections.usuarios.get(idusuario)->get('nombres') %> <%= app.collections.usuarios.get(idusuario)->get('apellidos') %></td>s
+	<td><%= app.collections.usuarios.get(idusuario).get('nombres') %> <%= app.collections.usuarios.get(idusuario).get('apellidos') %></td>
+	<td><%= guia %></td>
+	<td><%= lote %></td>
 </script>

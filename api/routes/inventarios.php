@@ -98,7 +98,7 @@ $app->group('/api/inventarios', function(){
 	/**
 	* Obtener inventario por id
 	*/
-	$this->get('/{id}', function ($request, $response, $args) {
+	$this->get('/{id}/', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;

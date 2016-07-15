@@ -103,7 +103,7 @@ $app->group('/api/movimientos', function(){
 	/**
 	* Obtener todos los movimientos por inventario
 	*/
-	$this->get('/inventario/{id}', function ($request, $response, $args) {
+	$this->get('/inventario/{id}/', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
@@ -119,14 +119,14 @@ $app->group('/api/movimientos', function(){
 	/**
 	* Obtener todos los movimientos por producto y fecha
 	*/
-	$this->get('/producto/{id}/{fi}/{ff}', function ($request, $response, $args) {
+	$this->get('/producto/{id}/{fi}/{ff}/', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
 		$login  = &$this->login;
 
-		$fi = \DateTime::createFromFormat('Y-m-d', $args['fi'].' 00:00:00');
-		$ff = \DateTime::createFromFormat('Y-m-d', $args['ff'].' 23:59:59');
+		$fi = \DateTime::createFromFormat('d-m-Y H:i:s', trim($args['fi']).' 00:00:00');
+		$ff = \DateTime::createFromFormat('d-m-Y H:i:s', trim($args['ff']).' 23:59:59');
 
 		if($fi===false || $ff===false){
 			throw new Exception("Una de las fechas es incorrecta", 400);
