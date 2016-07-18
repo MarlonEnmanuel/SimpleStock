@@ -28,14 +28,14 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 			u.render().appendTo(self.$el.find('.container'));
 		});
 
-		app.routers.registrar.on('route:inventarios', function(){
+		app.router.on('route:inventarios', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('Inventarios');
 			self.loadTable();
 			self.$el.find('select').material_select();
 		});
 
-		app.routers.registrar.on('route:inventarioNuevo', function(){
+		app.router.on('route:inventarioNuevo', function(){
 			self.editer.render();
 			app.views.header.setTitle('Inventario');
 		});
@@ -62,8 +62,7 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 		
 		if(idperiodo>0){
 			self.collection.reset();
-			var url = '/api/inventarios/periodo/'+idperiodo+'/';
-			self.collection.fetch({url: url});
+			self.collection.fetchByPeriodo(idperiodo);
 		}
 	},
 

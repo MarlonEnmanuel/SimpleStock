@@ -5,7 +5,24 @@ SimpleStock.Views.Entrysals = Backbone.View.extend({
 	template 	: _.template($('#page-entrysals').html()),
 
 	events : {
-		'submit form' : 'loadTable'
+		'submit form' : 'loadTable',
+		'keypress form' : 'pressEnter',
+	},
+
+	pressEnter : function(event){
+		var keyCode = event.keyCode || event.which;
+		if(keyCode==13){
+			event.preventDefault();
+			var index = parseInt($(event.target).attr('tabindex'));
+			var next = this.$el.find('form [tabindex='+(index+1)+']');
+			if( next.length ){
+				$(next).focus();
+				$(next).select();
+			}else{
+				this.$el.find('form [tabindex=1]').focus();
+				this.$el.find('form [tabindex=1]').select();
+			}
+		}
 	},
 
 	initialize : function(){
@@ -22,7 +39,7 @@ SimpleStock.Views.Entrysals = Backbone.View.extend({
 			u.render().appendTo(self.$el.find('.container'));
 		});
 
-		app.routers.reportes.on('route:entrysal', function(){
+		app.router.on('route:entrysal', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('entrysal');
 			self.$el.find('.cabecera').hide();
@@ -49,11 +66,8 @@ SimpleStock.Views.Entrysals = Backbone.View.extend({
 			Materialize.toast('El codigo no coincide con ningun producto');
 		}
 
-		debugger;
-
 		self.collection.reset();
-		var url = '/api/movimientos/producto/'+producto.get('id')+'/'+desde+'/'+hasta+'/';
-		self.collection.fetch({url: url});
+		self.collection.fetchByFechas(producto.get('id'), desde, hasta);
 
 		self.$el.find('.cabecera .fecha').text((new Date()).toLocaleString());
 		self.$el.find('.cabecera .producto').text(producto.get('codigo')+' - '+producto.get('nombre'));

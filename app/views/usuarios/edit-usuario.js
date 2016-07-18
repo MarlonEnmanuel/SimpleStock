@@ -7,7 +7,24 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 
 	events : {
 		'submit form' : 'enviar',
-		'click .cancelar' : 'hide'
+		'click .cancelar' : 'hide',
+		'keypress form' : 'pressEnter',
+	},
+
+	pressEnter : function(event){
+		var keyCode = event.keyCode || event.which;
+		if(keyCode==13){
+			event.preventDefault();
+			var index = parseInt($(event.target).attr('tabindex'));
+			var next = this.$el.find('form [tabindex='+(index+1)+']');
+			if( next.length ){
+				$(next).focus();
+				$(next).select();
+			}else{
+				this.$el.find('form [tabindex=1]').focus();
+				this.$el.find('form [tabindex=1]').select();
+			}
+		}
 	},
 
 	render : function(model){
@@ -28,7 +45,6 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 	},
 
 	hide : function(event){
-		if(event) event.preventDefault();
 		this.$el.hide();
 		Backbone.history.navigate('/gestionar/usuarios');
 	},

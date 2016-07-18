@@ -42,23 +42,23 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-codigo" type="text" class="validate" name="codigo" >
+	        	<input id="ip-codigo" type="text" tabindex="1" name="codigo" >
 	        	<label for="ip-codigo">Código</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-nombre" type="text" class="validate" name="nombre">
+	        	<input id="ip-nombre" type="text" tabindex="2" name="nombre">
 	        	<label for="ip-nombre" >Nombre del Producto</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s12">
-	        	<input id="ip-descrip" type="text" class="validate" name="descrip">
+	        	<input id="ip-descrip" type="text" tabindex="3" name="descrip">
 	        	<label for="ip-descrip" >Descripción</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<select name="idcategoria">
+	        	<select name="idcategoria" tabindex="4">
 					<option value="" disabled selected>Seleccione Categoría</option>
 					<% app.collections.categorias.each(function(model){ %>
 						<option value="<%=model.get('id')%>"> 
@@ -71,10 +71,10 @@
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>
@@ -91,23 +91,23 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-codigo" type="text" class="validate" name="codigo" value="<%=codigo%>">
+	        	<input id="ip-codigo" type="text" tabindex="1" name="codigo" value="<%=codigo%>">
 	        	<label for="ip-codigo" class="active">Código</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-nombre" type="text" class="validate" name="nombre" value="<%=nombre%>">
+	        	<input id="ip-nombre" type="text" tabindex="2" name="nombre" value="<%=nombre%>">
 	        	<label for="ip-nombre" class="active">Nombre de Categoría</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s12">
-	        	<input id="ip-descrip" type="text" class="validate" name="descrip" value="<%=descrip%>">
+	        	<input id="ip-descrip" type="text" tabindex="3" name="descrip" value="<%=descrip%>">
 	        	<label for="ip-descrip" class="active">Descripción</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<select name="idcategoria">
+	        	<select name="idcategoria" tabindex="4">
 					<% app.collections.categorias.each(function(model){ %>
 						<option value="<%=model.get('id')%>" <%=(idcategoria=model.get('id'))?'selected':''%> > 
 							<%= model.get('codigo') %> - <%= model.get('nombre') %>
@@ -119,10 +119,10 @@
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>

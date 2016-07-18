@@ -31,9 +31,7 @@ SimpleStock.Views.Usuario = Backbone.View.extend({
 		event.preventDefault();
 		this.model.set('estado', !this.model.get('estado'));
 		var st = (this.model.get('estado')) ? 'Cuenta de usuario activada' : 'Cuenta de usuario desactivada';
-		var url = '/api/usuarios/'+this.model.get('id')+'/cambiarEstado';
-		this.model.save({}, {
-			url : url,
+		this.model.cambiarEstado({
 			success : function(){
 				Materialize.toast(st, 3000);
 			},

@@ -6,13 +6,30 @@ SimpleStock.Views.Login = Backbone.View.extend({
 	template 	: _.template($('#sslogin').html()),
 
 	events : {
-		'submit form' : 'logear'
+		'submit form' : 'logear',
+		'keypress form' : 'pressEnter',
+	},
+
+	pressEnter : function(event){
+		var keyCode = event.keyCode || event.which;
+		if(keyCode==13){
+			event.preventDefault();
+			var index = parseInt($(event.target).attr('tabindex'));
+			var next = this.$el.find('form [tabindex='+(index+1)+']');
+			if( next.length ){
+				$(next).focus();
+				$(next).select();
+			}else{
+				this.$el.find('form [tabindex=1]').focus();
+				this.$el.find('form [tabindex=1]').select();
+			}
+		}
 	},
 
 	initialize : function(){
 		var self = this;
 
-		app.routers.base.on('route:login', function(){
+		app.router.on('route:login', function(){
 			if(app.isLogged()){
 				Backbone.history.navigate('/home', {trigger: true});
 			}else{
@@ -20,7 +37,7 @@ SimpleStock.Views.Login = Backbone.View.extend({
 			}
 		});
 
-		app.routers.base.on('route:home', function(){
+		app.router.on('route:home', function(){
 			self.abrir();
 		});
 	},

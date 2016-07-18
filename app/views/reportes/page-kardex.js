@@ -5,7 +5,24 @@ SimpleStock.Views.Kardexs = Backbone.View.extend({
 	template 	: _.template($('#page-kardexs').html()),
 
 	events : {
-		'submit form' : 'loadTable'
+		'submit form' : 'loadTable',
+		'keypress form' : 'pressEnter',
+	},
+
+	pressEnter : function(event){
+		var keyCode = event.keyCode || event.which;
+		if(keyCode==13){
+			event.preventDefault();
+			var index = parseInt($(event.target).attr('tabindex'));
+			var next = this.$el.find('form [tabindex='+(index+1)+']');
+			if( next.length ){
+				$(next).focus();
+				$(next).select();
+			}else{
+				this.$el.find('form [tabindex=1]').focus();
+				this.$el.find('form [tabindex=1]').select();
+			}
+		}
 	},
 
 	initialize : function(){
@@ -22,10 +39,11 @@ SimpleStock.Views.Kardexs = Backbone.View.extend({
 			u.render().appendTo(self.$el.find('.container'));
 		});
 
-		app.routers.reportes.on('route:kardex', function(){
+		app.router.on('route:kardex', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('Kardex');
 			self.$el.find('.cabecera').hide();
+			self.$el.find('select').material_select();
 		});
 
 	},
@@ -37,33 +55,33 @@ SimpleStock.Views.Kardexs = Backbone.View.extend({
 
 	loadTable : function(event){
 		event.preventDefault();
+
 		var self = this;
 
 		self.$el.find('.container').empty();
+		self.collection.reset();
 
-		var idinv = self.$el.find('#ip-idinventario').val();
+		var ippro = self.$el.find('#ip-producto').val().trim();
+		var ipper = self.$el.find('#ip-idperiodo').val();
 
-		var minv = new SimpleStock.Models.Inventario();
+		var pro = app.collections.productos.findWhere({codigo: ippro});
 
-		minv.on('sync', function(){
-			self.collection.reset();
-			var url = '/api/movimientos/inventario/'+idinv+'/';
-			self.collection.fetch({url: url});
+		var inv = new SimpleStock.Models.Inventario();
 
-			var pro = app.collections.productos.findWhere({id: minv.get('idproducto')});
-
-			self.$el.find('.cabecera .inicial').text(minv.get('inicial'));
-			self.$el.find('.cabecera .fecha').text((new Date()).toLocaleString());
-			self.$el.find('.cabecera .producto').text(pro.get('codigo')+' - '+pro.get('nombre'));
-			self.$el.find('.cabecera').show();
+		inv.getByPerPro(ipper, pro.get('id'),{
+			success : function(){
+				self.collection.fetchByInventario(inv.get('id'));
+				
+				self.$el.find('.cabecera .inicial').text(inv.get('inicial'));
+				self.$el.find('.cabecera .fecha').text((new Date()).toLocaleString());
+				self.$el.find('.cabecera .producto').text(pro.get('codigo')+' - '+pro.get('nombre'));
+				self.$el.find('.cabecera').show();
+			},
+			error : function(){
+				Materialize.toast('Producto no encontrado en el periodo', 4000);
+			},
 		});
 
-		minv.on('error', function(){
-			Materialize.toast('El codigo no existe', 4000);
-		});
-
-		var url2 = '/api/inventarios/'+idinv+'/';
-		minv.fetch({url: url2});
 	},
 
 });

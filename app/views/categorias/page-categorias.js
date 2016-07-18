@@ -15,17 +15,17 @@ SimpleStock.Views.Categorias = Backbone.View.extend({
 
 		app.views.main.add(this);
 
-		app.routers.gestionar.on('route:categorias', function(){
+		app.router.on('route:categorias', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('Categorias');
 			self.loadTable();
 		});
 
-		app.routers.gestionar.on('route:categoriaNuevo', function(){
+		app.router.on('route:categoriaNuevo', function(){
 			self.editer.render();
 		});
 
-		app.routers.gestionar.on('route:categoriaEditar', function(){
+		app.router.on('route:categoriaEditar', function(){
 			var model = app.collections.categorias.get(self.editId);
 			if(model){
 				self.editer.render(model);

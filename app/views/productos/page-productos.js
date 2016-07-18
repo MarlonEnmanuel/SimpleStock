@@ -15,17 +15,17 @@ SimpleStock.Views.Productos = Backbone.View.extend({
 
 		app.views.main.add(this);
 
-		app.routers.gestionar.on('route:productos', function(){
+		app.router.on('route:productos', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('Productos');
 			self.loadTable();
 		});
 
-		app.routers.gestionar.on('route:productoNuevo', function(){
+		app.router.on('route:productoNuevo', function(){
 			self.editer.render();
 		});
 
-		app.routers.gestionar.on('route:productoEditar', function(){
+		app.router.on('route:productoEditar', function(){
 			var model = app.collections.productos.get(self.editId);
 			if(model){
 				self.editer.render(model);

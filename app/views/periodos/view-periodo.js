@@ -29,9 +29,7 @@ SimpleStock.Views.Periodo = Backbone.View.extend({
 
 	finalizar : function(){
 		if(confirm('Esta acción finalizará el periodo actual, por lo tanto ya no podrá hacer operaciones sobre este. ¿Desea continuar?')){
-			this.model.set({actual : false});
-			this.model.save({},{
-				url : '/api/periodos/actual/cerrar/',
+			this.model.cerrar({
 				success : function(){
 					Materialize.toast('Periodo finalizado, ahora puede crear uno nuevo', 6000);
 					app.models.actual.clear();

@@ -15,17 +15,17 @@ SimpleStock.Views.Usuarios = Backbone.View.extend({
 
 		app.views.main.add(this);
 
-		app.routers.gestionar.on('route:usuarios', function(){
+		app.router.on('route:usuarios', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('Usuarios');
 			self.loadTable();
 		});
 
-		app.routers.gestionar.on('route:usuarioNuevo', function(){
+		app.router.on('route:usuarioNuevo', function(){
 			self.editer.render();
 		});
 
-		app.routers.gestionar.on('route:usuarioEditar', function(){
+		app.router.on('route:usuarioEditar', function(){
 			var model = app.collections.usuarios.get(self.editId);
 			if(model){
 				self.editer.render(model);

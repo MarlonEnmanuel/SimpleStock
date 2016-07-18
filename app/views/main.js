@@ -7,10 +7,10 @@ SimpleStock.Views.Main = Backbone.View.extend({
 	initialize : function(){
 		this.pages = [];
 		var self = this;
-		app.routers.base.on('route:home', function(){
+		app.router.on('route:home', function(){
 			self.clean();
 		});
-		app.routers.base.on('route:login', function(){
+		app.router.on('route:login', function(){
 			self.clean();
 		});
 	},

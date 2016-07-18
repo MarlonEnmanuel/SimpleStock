@@ -81,7 +81,7 @@ $app->group('/api/inventarios', function(){
 	/**
 	* Obtener inventarios por periodo
 	*/
-	$this->get('/periodo/{id}/', function ($request, $response, $args) {
+	$this->get('/periodo/{id}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
@@ -96,9 +96,27 @@ $app->group('/api/inventarios', function(){
 
 
 	/**
+	* Obtener inventario por periodo y producto
+	*/
+	$this->get('/periodo/{idperiodo}/producto/{idproducto}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$IAD = new Access\Inventario($mysqli, $logger);
+
+		$lista = $IAD->search()->searchBy('idperiodo', $args['idperiodo']);
+		$inv = $lista->getBy('idproducto', $args['idproducto']);
+		
+		return $response->withJson($inv->toArray());
+	});
+
+
+	/**
 	* Obtener inventario por id
 	*/
-	$this->get('/{id}/', function ($request, $response, $args) {
+	$this->get('/{id}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;

@@ -15,7 +15,7 @@ gulp.task('compile-app', function(){
 	gulp.src([
 		'./app/init.js',
 		'./app/models/**/*.js',
-		'./app/collections/**/*.js', 
+		'./app/collections/**/*.js',
 		'./app/views/**/*.js',
 		'./app/routers/**/*.js',
 		'./app/app.js'

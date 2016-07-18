@@ -51,30 +51,30 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-nombres" type="text" class="validate" name="nombres">
+	        	<input id="ip-nombres" type="text" tabindex="1" name="nombres">
 	        	<label for="ip-nombres">Nombres</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-apellidos" type="text" class="validate" name="apellidos">
+	        	<input id="ip-apellidos" type="text" tabindex="2" name="apellidos">
 	        	<label for="ip-apellidos">Apellidos</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-user" type="text" class="validate" name="user">
+	        	<input id="ip-user" type="text" tabindex="3" name="user">
 	        	<label for="ip-user">Nombre de Usuario</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-puesto" type="text" class="validate" name="puesto">
+	        	<input id="ip-puesto" type="text" tabindex="4" name="puesto">
 	        	<label for="ip-puesto">Puesto</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>
@@ -91,30 +91,30 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-nombres" type="text" class="validate" name="nombres" value="<%=nombres%>">
+	        	<input id="ip-nombres" type="text" tabindex="1" name="nombres" value="<%=nombres%>">
 	        	<label for="ip-nombres" class="active">Nombres</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-apellidos" type="text" class="validate" name="apellidos" value="<%=apellidos%>">
+	        	<input id="ip-apellidos" type="text" tabindex="2" name="apellidos" value="<%=apellidos%>">
 	        	<label for="ip-apellidos" class="active">Apellidos</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-user" type="text" class="validate" name="user" value="<%=user%>">
+	        	<input id="ip-user" type="text" tabindex="3" name="user" value="<%=user%>">
 	        	<label for="ip-user" class="active">Nombre de Usuario</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-puesto" type="text" class="validate" name="puesto" value="<%=puesto%>">
+	        	<input id="ip-puesto" type="text" tabindex="4" name="puesto" value="<%=puesto%>">
 	        	<label for="ip-puesto" class="active">Puesto</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>

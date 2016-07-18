@@ -6,9 +6,7 @@
 	        	<select name="idperiodo" id="ip-idperiodo">
 					<option value="" disabled selected>Seleccione un periodo</option>
 					<% app.collections.periodos.each(function(model){ %>
-						<option value="<%=model.get('id')%>" <%=(app.models.actual.get('id')==model.get('id'))?'selected':''%> > 
-							<%= model.get('nombre') %> <%= (model.get('actual'))?' - ACTUAL':''  %>
-						</option>
+						<option value="<%=model.get('id')%>" <%=(app.models.actual.get('id')==model.get('id'))?'selected':''%> ><%= model.get('nombre') %> <%= (model.get('actual'))?' - ACTUAL':''  %></option>
 					<% }); %>
 				</select>
 				<label>Eliga un periodo</label>
@@ -56,20 +54,20 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-codigo" type="text" class="validate" name="codigo">
+	        	<input id="ip-codigo" type="text" tabindex="1" name="codigo">
 	        	<label for="ip-codigo">Código del Producto</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<input id="ip-inicial" type="text" class="validate" name="inicial">
+	        	<input id="ip-inicial" type="text" tabindex="2" name="inicial">
 	        	<label for="ip-inicial">Saldo Inicial del producto</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>

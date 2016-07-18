@@ -1,15 +1,23 @@
 
 <script type="text/template" id="page-kardexs" data-class="page-kardexs container" data-tag="div">
 	<form action="section datos">
+		<br><br>
 		<div class="row">
-	    	<div class="input-field col s6 form-cancel">
-	    		<div class="input-field col s6">
-		        	<input id="ip-idinventario" type="text" class="validate" name="ip-idinventario">
-		        	<label for="ip-idinventario">Código de Inventario</label>
-		        </div>
+			<div class="input-field col s6 m4">
+	        	<select name="idperiodo" id="ip-idperiodo" tabindex="1">
+					<option value="" disabled selected>Seleccione un periodo</option>
+					<% app.collections.periodos.each(function(model){ %>
+						<option value="<%=model.get('id')%>" <%=(app.models.actual.get('id')==model.get('id'))?'selected':''%> ><%= model.get('nombre') %> <%= (model.get('actual'))?' - ACTUAL':''  %></option>
+					<% }); %>
+				</select>
+				<label>Eliga un periodo</label>
 	        </div>
-	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Generar" type="submit">
+	    	<div class="input-field col s6 m4">
+	    		<input id="ip-producto" type="text" class="validate" name="producto" tabindex="2">
+		        <label for="ip-producto">Código de Producto</label>
+	        </div>
+	        <div class="input-field col s12 m4">
+	        	<input class="waves-effect waves-light btn right" value="Generar" type="submit">
 	        </div>
 	    </div>
 	    <br>

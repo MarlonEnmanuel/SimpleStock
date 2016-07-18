@@ -15,17 +15,17 @@ SimpleStock.Views.Periodos = Backbone.View.extend({
 
 		app.views.main.add(this);
 
-		app.routers.gestionar.on('route:periodos', function(){
+		app.router.on('route:periodos', function(){
 			app.views.main.show(self);
 			app.views.header.setTitle('Periodos');
 			self.loadTable();
 		});
 
-		app.routers.gestionar.on('route:periodoNuevo', function(){
+		app.router.on('route:periodoNuevo', function(){
 			self.editer.render();
 		});
 
-		app.routers.gestionar.on('route:periodoEditar', function(){
+		app.router.on('route:periodoEditar', function(){
 			var model = app.collections.periodos.get(self.editId);
 			if(model){
 				self.editer.render(model);

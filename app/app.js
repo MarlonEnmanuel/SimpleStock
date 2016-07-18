@@ -10,10 +10,7 @@ app.collections.productos = new SimpleStock.Collections.Productos({});
 app.collections.periodos = new SimpleStock.Collections.Periodos({});
 
 //Routers
-app.routers.base = new SimpleStock.Routers.Base({});
-app.routers.gestionar = new SimpleStock.Routers.Gestionar({});
-app.routers.registrar = new SimpleStock.Routers.Registrar({});
-app.routers.reportes = new SimpleStock.Routers.Reportes({});
+app.router = new SimpleStock.Routers.Base({});
 
 //Vistas
 app.views.login = new SimpleStock.Views.Login({});
@@ -53,9 +50,7 @@ app.load = function(successCall, errorCall){
 		contError ++;
 		if(contError==1) errorCall();
 	};
-	app.models.actual.fetch({
-		url : '/api/periodos/actual/',
-	});
+	app.models.actual.fetchActual();
 	app.collections.usuarios.fetch({
 		success : success,
 		error : error,

@@ -7,7 +7,7 @@ SimpleStock.Views.Header = Backbone.View.extend({
 	initialize : function(){
 		var self = this;
 
-		app.routers.base.on('route:home', function(){
+		app.router.on('route:home', function(){
 			self.setTitle('Simple Stock');
 		});
 

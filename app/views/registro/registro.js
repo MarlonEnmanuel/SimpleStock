@@ -5,7 +5,24 @@ SimpleStock.Views.Registro = Backbone.View.extend({
 	template 	: _.template($('#ssregistro').html()),
 
 	events : {
-		'submit form' : 'enviar'
+		'submit form' : 'enviar',
+		'keypress form' : 'pressEnter',
+	},
+
+	pressEnter : function(event){
+		var keyCode = event.keyCode || event.which;
+		if(keyCode==13){
+			event.preventDefault();
+			var index = parseInt($(event.target).attr('tabindex'));
+			var next = this.$el.find('form [tabindex='+(index+1)+']');
+			if( next.length ){
+				$(next).focus();
+				$(next).select();
+			}else{
+				this.$el.find('form [tabindex=1]').focus();
+				this.$el.find('form [tabindex=1]').select();
+			}
+		}
 	},
 
 	initialize : function(){
@@ -13,14 +30,14 @@ SimpleStock.Views.Registro = Backbone.View.extend({
 
 		app.views.main.add(this);
 
-		app.routers.registrar.on('route:entrada', function(){
+		app.router.on('route:entrada', function(){
 			self.tipo = 'entrada';
 			self.render();
 			app.views.main.show(self);
 			app.views.header.setTitle('Entrada');
 		});
 
-		app.routers.registrar.on('route:salida', function(){
+		app.router.on('route:salida', function(){
 			self.tipo = 'salida';
 			self.render();
 			app.views.main.show(self);

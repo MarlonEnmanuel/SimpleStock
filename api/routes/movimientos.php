@@ -103,7 +103,7 @@ $app->group('/api/movimientos', function(){
 	/**
 	* Obtener todos los movimientos por inventario
 	*/
-	$this->get('/inventario/{id}/', function ($request, $response, $args) {
+	$this->get('/inventario/{id}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
@@ -119,7 +119,7 @@ $app->group('/api/movimientos', function(){
 	/**
 	* Obtener todos los movimientos por producto y fecha
 	*/
-	$this->get('/producto/{id}/{fi}/{ff}/', function ($request, $response, $args) {
+	$this->get('/producto/{id}/{fi}/{ff}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;

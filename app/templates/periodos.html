@@ -43,23 +43,23 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-nombre" type="text" class="validate" name="nombre">
+	        	<input id="ip-nombre" type="text" tabindex="1" name="nombre">
 	        	<label for="ip-nombre">Nombre</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s12">
-	        	<input id="ip-descrip" type="text" class="validate" name="descrip">
+	        	<input id="ip-descrip" type="text" tabindex="2" name="descrip">
 	        	<label for="ip-descrip">Descripción</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-saldo" type="checkbox" name="saldos"/>
+	        	<input id="ip-saldo" type="checkbox" tabindex="3" name="saldos"/>
       			<label for="ip-saldo">Usar saldos finales de</label>
 	        </div>
 	        <div class="input-field col s6">
-	        	<select name="idperiodo" id="ip-idperiodo">
+	        	<select name="idperiodo" id="ip-idperiodo" tabindex="4">
 					<option value="" disabled selected>Seleccione un periodo</option>
 					<% app.collections.periodos.each(function(model){ %>
 						<option value="<%=model.get('id')%>" <%=(app.models.actual.get('id')==model.get('id'))?'selected':''%> > 
@@ -72,10 +72,10 @@
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>
@@ -92,22 +92,22 @@
     <form class="section">
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-nombre" type="text" class="validate" name="nombre" value="<%=nombre%>">
+	        	<input id="ip-nombre" type="text" tabindex="1" name="nombre" value="<%=nombre%>">
 	        	<label for="ip-nombre" class="active">Nombre</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s12">
-	        	<input id="ip-descrip" type="text" class="validate" name="descrip" value="<%=descrip%>">
+	        	<input id="ip-descrip" type="text" tabindex="2" name="descrip" value="<%=descrip%>">
 	        	<label for="ip-descrip" class="active">Descripción</label>
 	        </div>
 	    </div>
 	    <div class="row">
 	    	<div class="input-field col s6 form-cancel">
-	    		<a class="cancelar waves-effect waves-light btn">Cancelar</a>
+	    		<input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
 	        </div>
 	        <div class="input-field col s6">
-	        	<input class="waves-effect waves-light btn" value="Enviar" type="submit">
+	        	<input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
 	        </div>
 	    </div>
 	</form>
