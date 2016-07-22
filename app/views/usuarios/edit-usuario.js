@@ -60,6 +60,9 @@ SimpleStock.Views.EditUsuario = Backbone.View.extend({
 			success : function(){
 				if(self.isEdit){
 					Materialize.toast('Usuario modificado', 4000);
+					if(app.models.login.get('id')==model.get('id')){
+						app.models.login.set(model.toJSON());
+					}
 					self.hide();
 				}else{
 					Materialize.toast('Usuario creado, la contraseña es 123456', 10000);

@@ -35,7 +35,11 @@ $app->group('/api/productos', function(){
 
 		$Pro->validate();
 
-		$PAD->create($Pro);
+		try{
+			$PAD->create($Pro);
+		}catch(\Exception $e){
+			throw new Exception("El código o el nombre ya existe", 500);
+		}
 
 		return $response->withJson($Pro->toArray(), 201);
 	});
@@ -124,7 +128,11 @@ $app->group('/api/productos', function(){
 
 		$Pro->validate();
 
-		$PAD->update($Pro);
+		try{
+			$PAD->update($Pro);
+		}catch(\Exception $e){
+			throw new Exception("El código o el nombre está en uso", 500);
+		}
 
 		return $response->withJson($Pro->toArray(), 202);
 	});
@@ -144,7 +152,11 @@ $app->group('/api/productos', function(){
 
 		$PAD->read($Pro);
 
-		$PAD->delete($Pro);
+		try{
+			$PAD->delete($Pro);
+		}catch(\Exception $e){
+			throw new Exception("No se puede eliminar porque este producto se está inventariando", 500);
+		}
 
 		return $response->withStatus(204);
 	});

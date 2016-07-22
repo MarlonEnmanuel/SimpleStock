@@ -5,13 +5,17 @@ SimpleStock.Views.Producto = Backbone.View.extend({
 	template 	: _.template($('#view-producto').html()),
 
 	events : {
-		'click .editar' : 'editar'
+		'click .editar' : 'editar',
+		'click .eliminar' : 'eliminar',
 	},
 
 	initialize : function(){
 		var self = this;
 		self.model.on('sync', function(){
 			self.render();
+		});
+		self.model.on('destroy', function(){
+			self.remove();
 		});
 	},
 
@@ -24,6 +28,21 @@ SimpleStock.Views.Producto = Backbone.View.extend({
 		event.preventDefault();
 		var url = '/gestionar/productos/editar/'+this.model.get('id');
 		Backbone.history.navigate(url, {trigger: true});
+	},
+
+	eliminar : function(event){
+		event.preventDefault();
+		if(confirm('¿Seguro que desea eliminar el producto?')){
+			this.model.destroy({
+				wait : true,
+				success : function(){
+					Materialize.toast('Producto eliminado', 4000);
+				},
+				error : function(xhr, st){
+					Materialize.toast(st.responseText, 5000);
+				},
+			});
+		}
 	}
 	
 });

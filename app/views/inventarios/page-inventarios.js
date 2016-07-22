@@ -39,6 +39,19 @@ SimpleStock.Views.Inventarios = Backbone.View.extend({
 			self.editer.render();
 			app.views.header.setTitle('Inventario');
 		});
+
+		app.router.on('route:inventarioEditar', function(){
+			var inv = new SimpleStock.Models.Inventario({id: self.editId});
+			inv.fetch({
+				success: function(){
+					self.editer.render(inv);
+				},
+				error: function(){
+					Backbone.history.navigate('/inventarios');
+					Materialize.toast('El inventari no existe', 4000);
+				},
+			});
+		});
 	},
 
 	render : function(){

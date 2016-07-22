@@ -31,7 +31,11 @@ $app->group('/api/categorias', function(){
 
 		$Cat->validate();
 
-		$CAD->create($Cat);
+		try{
+			$CAD->create($Cat);
+		}catch(\Exception $e){
+			throw new Exception("El código o el nombre ya existe", 500);
+		}
 
 		return $response->withJson($Cat->toArray(), 201);
 	});
@@ -93,7 +97,11 @@ $app->group('/api/categorias', function(){
 
 		$Cat->validate();
 
-		$CAD->update($Cat);
+		try{
+			$CAD->update($Cat);
+		}catch(\Exception $e){
+			throw new Exception("El código o el nombre está en uso", 500);
+		}
 
 		return $response->withJson($Cat->toArray(), 202);
 	});
@@ -113,7 +121,11 @@ $app->group('/api/categorias', function(){
 
 		$CAD->read($Cat);
 
-		$CAD->delete($Cat);
+		try{
+			$CAD->delete($Cat);
+		}catch(\Exception $e){
+			throw new Exception("No se puede eliminar porque esta categoría tiene productos", 500);
+		}
 
 		return $response->withStatus(204);
 	});

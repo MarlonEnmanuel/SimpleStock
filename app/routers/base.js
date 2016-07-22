@@ -4,15 +4,18 @@ SimpleStock.Routers.Base = Backbone.Router.extend({
 	routes : {
 		"" 	: "login",
 		"home" : "home",
+		"micuenta" : "micuenta",
 
-		"registrar/entrada" : "entrada",
-		"registrar/salida" : "salida",
+		"registro" : "registro",
+		"registro/editar/:id" : "registroEditar",
 
 		"inventarios" : "inventarios",
 		"inventarios/nuevo" : "inventarioNuevo",
+		"inventarios/editar/:id" : "inventarioEditar",
 
 		"reportes/kardex" : "kardex",
-		"reportes/entrysal" : "entrysal",
+		"reportes/entradas" : "entradas",
+		"reportes/salidas" : "salidas",
 
 		"gestionar/usuarios" : "usuarios",
 		"gestionar/usuarios/nuevo" : "usuarioNuevo",
@@ -39,12 +42,17 @@ SimpleStock.Routers.Base = Backbone.Router.extend({
 		$(document).attr('title', 'Simple Stock | Home');
 	},
 
-	entrada : function(){
-		$(document).attr('title', 'Registrar | Entrada');
+	micuenta : function(){
+		$(document).attr('title', 'Simple Stock | Mi Cuenta');
 	},
 
-	salida : function(){
-		$(document).attr('title', 'Registrar | Salida');
+	registro : function(){
+		$(document).attr('title', 'Simple Stock | Registrar');
+	},
+
+	registroEditar : function(id){
+		$(document).attr('title', 'Editar | Registro');
+		app.views.registro.editId = id;
 	},
 
 	inventarios : function(){
@@ -55,12 +63,21 @@ SimpleStock.Routers.Base = Backbone.Router.extend({
 		$(document).attr('title', 'Nuevo | Inventario');
 	},
 
-	kardex : function(){
-		$(document).attr('title', 'Reportes | Entrada');
+	inventarioEditar : function(id){
+		$(document).attr('title', 'Nuevo | Inventario');
+		app.views.inventarios.editId = id;
 	},
 
-	entrysal : function(){
-		$(document).attr('title', 'Reportes | Salida');
+	kardex : function(){
+		$(document).attr('title', 'Reportes | Kardex');
+	},
+
+	entradas : function(){
+		$(document).attr('title', 'Reportes | Entradas');
+	},
+
+	salidas : function(){
+		$(document).attr('title', 'Reportes | Salidas');
 	},
 
 	usuarios : function(){

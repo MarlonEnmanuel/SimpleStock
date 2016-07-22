@@ -15,6 +15,16 @@ $.fn.serializeObject = function(){
     return o;
 };
 
+Date.prototype.toSimpleString = function(){
+    var s = '';
+    s += this.getDate() + '-';
+    s += (this.getMonth()+1) + '-';
+    s += this.getFullYear() + ' ';
+    s += (this.getHours().toString().length==1?'0'+this.getHours().toString():this.getHours().toString()) + ':';
+    s += (this.getMinutes().toString().length==1?'0'+this.getMinutes().toString():this.getMinutes().toString());
+    return s;
+};
+
 var SimpleStock = {
     Models : {},
     Collections : {},

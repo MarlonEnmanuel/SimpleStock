@@ -39,7 +39,11 @@ $app->group('/api/usuarios', function(){
 
 		$Usu->validate();
 
-		$UAD->create($Usu);
+		try{
+			$UAD->create($Usu);
+		}catch(\Exception $e){
+			throw new Exception("El nombre de usuario ya existe", 500);
+		}
 
 		return $response->withJson($Usu->toArray(['pass'], true), 201);
 	});
@@ -101,7 +105,6 @@ $app->group('/api/usuarios', function(){
 		if($isAdmin) {
 
 			if(!$isme){
-				$Usu->estado 	= $inputs['estado'];
 				$Usu->user 		= $inputs['user'];
 			}
 			
@@ -111,7 +114,6 @@ $app->group('/api/usuarios', function(){
 		}else{
 
 			if($isme){
-				$Usu->pass 		= $inputs['pass'];
 				$Usu->nombres	= $inputs['nombres'];
 				$Usu->apellidos = $inputs['apellidos'];
 			}else{
@@ -121,10 +123,56 @@ $app->group('/api/usuarios', function(){
 
 		$Usu->validate();
 
+		try{
+			$UAD->update($Usu);
+		}catch(\Exception $e){
+			throw new Exception("El nombre de usuario está en uso", 500);
+		}
+
+		if($login['id']==$Usu->id){
+			$_SESSION['login'] = $Usu->toArray(['pass'], true);
+		}
+
+		return $response->withJson($Usu->toArray(['pass'], true), 202);
+	});
+
+	/**
+	* Cambiar Contraseña
+	*/
+	$this->put('/{id}/nuevopass', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$inputs = $request->getParsedBody();
+
+		$Usu = new Models\Usuario((int) $args['id']);
+		$UAD = new Access\Usuario($mysqli, $logger);
+
+		$UAD->read($Usu);
+
+		$isme = $login['id'] == $args['id'];
+
+		if(!$isme) 
+			throw new Exception("No está autorizado", 403);
+
+		if($Usu->pass!=$inputs['passold'])
+			throw new Exception("Contraseña actual incorrecta", 403);
+
+		if($inputs['newpass1']!=$inputs['newpass2']){
+			throw new Exception("Las contraseñas no coinciden", 500);
+		}
+		
+		$Usu->pass = $inputs['newpass1'];
+
+		$Usu->validate();
+
 		$UAD->update($Usu);
 
 		return $response->withJson($Usu->toArray(['pass'], true), 202);
 	});
+
 
 	/**
 	* Cambiar estado de usuario
@@ -184,7 +232,11 @@ $app->group('/api/usuarios', function(){
 
 		$UAD->read($Usu);
 
-		$UAD->delete($Usu);
+		try{
+			$UAD->delete($Usu);
+		}catch(\Exception $e){
+			throw new Exception("No se puede eliminar porque este usuario ha registrado movimientos", 500);
+		}
 
 		return $response->withStatus(204);
 	});

@@ -82,6 +82,7 @@ app.init = function() {
 		app.views.periodos = new SimpleStock.Views.Periodos({});
 		app.views.kardexs = new SimpleStock.Views.Kardexs({});
 		app.views.entrysals = new SimpleStock.Views.Entrysals({});
+		app.views.cuenta = new SimpleStock.Views.Cuenta({});
 
 		Backbone.history.navigate('/home', {trigger: true});
 	}, function(){

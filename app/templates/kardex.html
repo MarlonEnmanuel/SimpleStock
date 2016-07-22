@@ -3,7 +3,7 @@
 	<form action="section datos">
 		<br><br>
 		<div class="row">
-			<div class="input-field col s6 m4">
+			<div class="input-field col s6">
 	        	<select name="idperiodo" id="ip-idperiodo" tabindex="1">
 					<option value="" disabled selected>Seleccione un periodo</option>
 					<% app.collections.periodos.each(function(model){ %>
@@ -12,11 +12,21 @@
 				</select>
 				<label>Eliga un periodo</label>
 	        </div>
-	    	<div class="input-field col s6 m4">
+	    	<div class="input-field col s6">
 	    		<input id="ip-producto" type="text" class="validate" name="producto" tabindex="2">
 		        <label for="ip-producto">Código de Producto</label>
 	        </div>
-	        <div class="input-field col s12 m4">
+	    </div>
+	    <div class="row">
+			<div class="input-field col s4">
+	    		<input id="ip-desde" type="text" class="validate" name="desde" tabindex="3" placeholder="dd-mm-aaaa hh:mm">
+		        <label for="ip-desde" class="active">Desde</label>
+	        </div>
+	        <div class="input-field col s4">
+	    		<input id="ip-hasta" type="text" class="validate" name="hasta" tabindex="4" placeholder="dd-mm-aaaa hh:mm">
+		        <label for="ip-hasta" class="active">Desde</label>
+	        </div>
+	    	<div class="input-field col s12 m4">
 	        	<input class="waves-effect waves-light btn right" value="Generar" type="submit">
 	        </div>
 	    </div>
@@ -57,6 +67,8 @@
 					<th data-field="fechreg">Usuario</th>
 					<th data-field="fechreg">Guía</th>
 					<th data-field="fechreg">Lote</th>
+					<th data-field="fechreg"></th>
+					<th data-field="fechreg"></th>
 			</thead>
 			<tbody class="container"></tbody>
 		</table>
@@ -64,7 +76,7 @@
 </script>
 
 <script type="text/template" id="view-kardex" data-class="view-kardex" data-tag="tr">
-    <td><%= (new Date(fechreg*1000)).toLocaleString() %></td>
+    <td><%= (new Date(fechreg*1000)).toSimpleString() %></td>
     <td><a class="apunte" href="#!" title="Click para información"><i class="material-icons">info_outline</i></a></td>
 	<td><%= (tipo=='entrada') ? cantidad : '' %></td>
 	<td><%= (tipo=='salida') ? cantidad : '' %></td>
@@ -72,4 +84,6 @@
 	<td><%= app.collections.usuarios.get(idusuario).get('nombres') %> <%= app.collections.usuarios.get(idusuario).get('apellidos') %></td>
 	<td><%= guia %></td>
 	<td><%= lote %></td>
+	<td><a class="editar" href="#!" title="Modificar Usuario"><i class="material-icons">mode_edit</i></a></td>
+	<td><a class="eliminar red-text text-darken-2" href="#!" title="Eliminar"><i class="material-icons">delete</i></a></td>
 </script>

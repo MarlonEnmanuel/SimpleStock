@@ -7,12 +7,16 @@ SimpleStock.Views.Usuario = Backbone.View.extend({
 	events : {
 		'click .editar' : 'editar',
 		'click .cambiarEstado' : 'cambiarEstado',
+		'click .eliminar' : 'eliminar',
 	},
 
 	initialize : function(){
 		var self = this;
 		self.model.on('sync', function(){
 			self.render();
+		});
+		self.model.on('destroy', function(){
+			self.remove();
 		});
 	},
 
@@ -40,5 +44,20 @@ SimpleStock.Views.Usuario = Backbone.View.extend({
 			},
 		});
 	},
+
+	eliminar : function(event){
+		event.preventDefault();
+		if(confirm('¿Seguro que desea eliminar al usuario?')){
+			this.model.destroy({
+				wait : true,
+				success : function(){
+					Materialize.toast('Usuario eliminado', 4000);
+				},
+				error : function(xhr, st){
+					Materialize.toast(st.responseText, 5000);
+				},
+			});
+		}
+	}
 	
 });

@@ -11,6 +11,7 @@
 					<th data-field="fechreg">Fch Reg</th>
 					<th data-field="cambiarEstado"></th>
 					<th data-field="editar"></th>
+					<th data-field="eliminar"></th>
 				</tr>
 			</thead>
 			<tbody class="container"></tbody>
@@ -33,9 +34,13 @@
 	<td><%= (new Date(fechreg*1000)).toLocaleString() %></td>
 	<% if(user!='administrador'){ %>
 		<td><a class="cambiarEstado" href="#!" title="Activar o Desactivar"><i class="material-icons">settings_power</i></a></td>
-		<td><a class="editar" href="#!" title="Modificar Usuario"><i class="material-icons">mode_edit</i></a></td>
 	<% }else{ %>
 		<td></td>
+	<% } %>
+	<td><a class="editar" href="#!" title="Modificar Usuario"><i class="material-icons">mode_edit</i></a></td>
+	<% if(user!='administrador'){ %>
+		<td><a class="eliminar red-text text-darken-2" href="#!" title="Eliminar"><i class="material-icons">delete</i></a></td>
+	<% }else{ %>
 		<td></td>
 	<% } %>
 </script>
@@ -101,8 +106,13 @@
 	    </div>
 	    <div class="row">
 	        <div class="input-field col s6">
-	        	<input id="ip-user" type="text" tabindex="3" name="user" value="<%=user%>">
-	        	<label for="ip-user" class="active">Nombre de Usuario</label>
+	        	<% if(id==1 && user=='administrador'){ %>
+					<input id="ip-user" type="text" tabindex="3" name="user" value="<%=user%>" disabled>
+	        		<label for="ip-user" class="active">Nombre de Usuario</label>
+	        	<% }else{ %>
+	        		<input id="ip-user" type="text" tabindex="3" name="user" value="<%=user%>">
+	        		<label for="ip-user" class="active">Nombre de Usuario</label>
+	        	<% } %>
 	        </div>
 	        <div class="input-field col s6">
 	        	<input id="ip-puesto" type="text" tabindex="4" name="puesto" value="<%=puesto%>">

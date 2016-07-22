@@ -3,6 +3,7 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 	tagName 	: $('#new-inventario').attr('data-tag'),
 	className 	: $('#new-inventario').attr('data-class'),
 	templateNew : _.template($('#new-inventario').html()),
+	templateEdit: _.template($('#edit-inventario').html()),
 
 	events : {
 		'submit form' : 'enviar',
@@ -26,9 +27,17 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 		}
 	},
 
-	render : function(){
-		this.$el.html(this.templateNew());
-		this.model = new SimpleStock.Models.Inventario({});
+	render : function(model){
+		if(model){
+			var data = model.toJSON();
+			this.$el.html(this.templateEdit(data));
+			this.model = model;
+			this.isEdit = true;
+		}else{
+			this.$el.html(this.templateNew());
+			this.model = new SimpleStock.Models.Inventario({});
+			this.isEdit = false;
+		}
 		this.$el.show();
 		$('html,body').animate({
 		    scrollTop: this.$el.offset().top
@@ -46,19 +55,26 @@ SimpleStock.Views.EditInventario = Backbone.View.extend({
 		var data = this.$el.find('form').serializeObject();
 		var model = this.model.set(data);
 
-		var pro = app.collections.productos.findWhere({codigo: data.codigo});
-		if(pro){
+		if(!self.isEdit){
+			var pro = app.collections.productos.findWhere({codigo: data.codigo});
+			if(!pro){
+				Materialize.toast('Producto no encontrado',4000);
+				return false;
+			}
 			model.set('idproducto', pro.get('id'));
-		}else{
-			Materialize.toast('El producto no existe', 4000);
-			return false;
 		}
 
 		model.save({}, {
 			success : function(){
-				Materialize.toast('Inventario registrado', 4000);
-				app.views.inventarios.loadTable();
-				self.hide();
+				if(self.isEdit){
+					Materialize.toast('Inventario actualizado', 4000);
+					app.views.inventarios.loadTable();
+					self.hide();
+				}else{
+					Materialize.toast('Inventario registrado', 4000);
+					app.views.inventarios.loadTable();
+					self.hide();
+				}
 			},
 			error : function(x, s){
 				Materialize.toast(s.responseText);

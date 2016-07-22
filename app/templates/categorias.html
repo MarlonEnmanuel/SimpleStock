@@ -9,6 +9,7 @@
 					<th data-field="user">Descripción</th>
 					<th data-field="puesto">Reg Por</th>
 					<th data-field="fechreg"></th>
+					<th data-field="fechreg"></th>
 				</tr>
 			</thead>
 			<tbody class="container"></tbody>
@@ -28,6 +29,7 @@
 	<td><%= descrip %></td>
 	<td><%= app.collections.usuarios.get(idusuario).get('user') %></td>
 	<td><a class="editar" href="#!" title="Modificar Categoría"><i class="material-icons">mode_edit</i></a></td>
+	<td><a class="eliminar red-text text-darken-2" href="#!" title="Eliminar"><i class="material-icons">delete</i></a></td>
 </script>
 
 

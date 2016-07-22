@@ -1,8 +1,8 @@
-<script type="text/template" id="ssregistro" data-class="ssregistro container" data-tag="div">
+<script type="text/template" id="page-registro" data-class="page-registro container" data-tag="div">
     
     <div class="section">
         <div class="row">
-            <h4>Registrar <%= strtipo %></h4>
+            <h4>Registrar Movimiento</h4>
         </div>
     </div>
 
@@ -23,27 +23,40 @@
         <form class="section">
             <div class="row">
                 <div class="input-field col s6">
-                    <input id="ip-idinventario" type="text" tabindex="1" name="idinventario">
-                    <label for="ip-idinventario" >Código de Inventario</label>
+                    <select id="ip-tipo" tabindex="1" name=tipo>
+                        <option value="entrada">Entrada</option>
+                        <option value="salida">Salida</option>
+                    </select>
+                    <label for="ip-tipo" >Tipo</label>
                 </div>
                 <div class="input-field col s6">
-                    <input id="ip-cantidad" type="number" tabindex="2" name="cantidad" value="1" min="1">
+                    <input id="ip-fechreg" type="text" tabindex="2" name="fechreg" placeholder="dd-mm-aaaa hh:mm" value="<%= (new Date()).toSimpleString() %>">
+                    <label for="ip-fechreg" class="active">Fecha de Registro</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input id="ip-producto" type="text" tabindex="3" name="producto">
+                    <label for="ip-producto" >Código de Producto</label>
+                </div>
+                <div class="input-field col s6">
+                    <input id="ip-cantidad" type="number" tabindex="4" name="cantidad" value="1" min="1">
                     <label for="ip-cantidad" class="active">Cantidad</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s6">
-                    <input id="ip-lote" type="text" tabindex="3" name="lote">
+                    <input id="ip-lote" type="text" tabindex="5" name="lote">
                     <label for="ip-lote" >Lote</label>
                 </div>
                 <div class="input-field col s6">
-                    <input id="ip-guia" type="text" tabindex="4" name="guia">
+                    <input id="ip-guia" type="text" tabindex="6" name="guia">
                     <label for="ip-guia" >Guía</label>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <input id="ip-apunte" type="text" tabindex="5" name="apunte">
+                    <input id="ip-apunte" type="text" tabindex="7" name="apunte">
                     <label for="ip-apunte" >Apunte</label>
                 </div>
             </div>
@@ -58,5 +71,68 @@
         </form>
 
     <% } %>
+
+</script>
+
+<script type="text/template" id="edit-registro" data-class="edit-registro container" data-tag="div">
+    
+    <div class="section">
+        <div class="row">
+            <h4>Editar Movimiento</h4>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <form class="section">
+        <div class="row">
+            <div class="input-field col s6">
+                <select id="ip-tipo" tabindex="1" name=tipo>
+                    <option value="entrada" <%=(tipo=='entrada')?'selected':'' %>>Entrada</option>
+                    <option value="salida" <%=(tipo=='salida')?'selected':'' %>>Salida</option>
+                </select>
+                <label for="ip-tipo" >Tipo</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ip-fechreg" type="text" tabindex="2" name="fechreg" value="<%=(new Date(fechreg*1000)).toSimpleString()%>" placeholder="dd-mm-aaaa hh:mm">
+                <label for="ip-fechreg" class="active">Fecha de Registro</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <input id="ip-producto" type="text" tabindex="3" name="producto" value="<%= app.collections.productos.get(inventario.get('idproducto')).get('codigo') %>">
+                <label for="ip-producto" class="active">Código de Producto</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ip-cantidad" type="number" tabindex="4" name="cantidad" min="1" value="<%= cantidad %>">
+                <label for="ip-cantidad" class="active">Cantidad</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6">
+                <input id="ip-lote" type="text" tabindex="5" name="lote" value="<%= lote %>">
+                <label for="ip-lote" class="active">Lote</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="ip-guia" type="text" tabindex="6" name="guia" value="<%= guia %>">
+                <label for="ip-guia" class="active">Guía</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="ip-apunte" type="text" tabindex="7" name="apunte" value="<%= apunte %>">
+                <label for="ip-apunte" class="active">Apunte</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s6 form-cancel">
+                <input class="cancelar waves-effect waves-light btn" value="Cancelar" type="reset">
+            </div>
+            <div class="input-field col s6">
+                <input class="guardar waves-effect waves-light btn" value="Guardar" type="submit">
+            </div>
+        </div>
+    </form>
+
 
 </script>

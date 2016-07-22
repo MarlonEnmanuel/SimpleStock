@@ -9,6 +9,7 @@
 					<th data-field="usuario">Reg Por</th>
 					<th data-field="categoria">Categoría</th>
 					<th data-field="editar"></th>
+					<th data-field="editar"></th>
 				</tr>
 			</thead>
 			<tbody class="container"></tbody>
@@ -29,6 +30,7 @@
 	<td><%= app.collections.usuarios.get(idusuario).get('user') %></td>
 	<td><%= app.collections.categorias.get(idcategoria).get('nombre') %></td>
 	<td><a class="editar" href="#!" title="Modificar Producto"><i class="material-icons">mode_edit</i></a></td>
+	<td><a class="eliminar red-text text-darken-2" href="#!" title="Eliminar"><i class="material-icons">delete</i></a></td>
 </script>
 
 
@@ -109,9 +111,7 @@
 	        <div class="input-field col s6">
 	        	<select name="idcategoria" tabindex="4">
 					<% app.collections.categorias.each(function(model){ %>
-						<option value="<%=model.get('id')%>" <%=(idcategoria=model.get('id'))?'selected':''%> > 
-							<%= model.get('codigo') %> - <%= model.get('nombre') %>
-						</option>
+						<option value="<%=model.get('id')%>" <%=(idcategoria==model.get('id'))?'selected':''%> ><%= model.get('codigo') %> - <%= model.get('nombre') %></option>
 					<% }); %>
 				</select>
 				<label>Seleccione Categoría</label>

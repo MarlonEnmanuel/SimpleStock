@@ -131,4 +131,54 @@ $app->group('/api/inventarios', function(){
 	});
 
 
+	/**
+	* Actualizar inventario por id
+	*/
+	$this->put('/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$inputs = $request->getParsedBody();
+
+		$Inv = new Models\Inventario($args['id']);
+		$IAD = new Access\Inventario($mysqli, $logger);
+
+		$IAD->read($Inv);
+
+		$Inv->inicial = $inputs['inicial'];
+
+		$Inv->validate();
+
+		$IAD->update($Inv);
+
+		return $response->withJson($Inv->toArray(), 202);
+	});
+
+
+	/**
+	* Eliminar inventario por id
+	*/
+	$this->delete('/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$Inv = new Models\Inventario($args['id']);
+		$IAD = new Access\Inventario($mysqli, $logger);
+
+		$IAD->read($Inv);
+
+		try{
+			$IAD->delete($Inv);
+		}catch(\Exception $e){
+			throw new Exception("No se puede eliminar porque se han registrado movimientos en este inventario", 500);
+		}
+
+		return $response->withStatus(204);
+	});
+
+
 });

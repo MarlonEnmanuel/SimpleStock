@@ -30,21 +30,12 @@ $app->group('/api/movimientos', function(){
 
 		$MAD = new Access\Movimiento($mysqli, $logger);
 		$IAD = new Access\Inventario($mysqli, $logger);
-		$PAD = new Access\Periodo($mysqli, $logger);
-
 
 		$Inv = new Models\Inventario((int) $inputs['idinventario']);
 		$IAD->read($Inv);
-
-		$Per = new Models\Periodo($Inv->idperiodo);
-		$PAD->read($Per);
-
-		if($Per->actual==false)
-			throw new Exception("El periodo elegido no está en transcurso", 400);
-
 		
 		$Mov = new Models\Movimiento();
-		$Mov->fechreg 	= new DateTime();
+		$Mov->fechreg 	= \DateTime::createFromFormat('d-m-Y H:i', $inputs['fechreg']);
 		$Mov->tipo 		= $inputs['tipo'];
 		$Mov->cantidad	= $inputs['cantidad'];
 		$Mov->lote		= $inputs['lote'];
@@ -53,6 +44,9 @@ $app->group('/api/movimientos', function(){
 		$Mov->idusuario = $login['id'];
 		$Mov->idinventario= $inputs['idinventario'];
 
+		if($Mov->fechreg===false)
+			throw new Exception("Fecha inválida, formato no aceptado<br>Ejemplo Correcto: 4-4-2014 02:05", 400);
+
 		$Mov->validate();
 
 		$Mov->saldoini = $Inv->saldo;
@@ -60,13 +54,9 @@ $app->group('/api/movimientos', function(){
 			$Mov->saldofin = $Mov->saldoini + $Mov->cantidad;
 		}else{
 			$Mov->saldofin = $Mov->saldoini - $Mov->cantidad;
-			if($Mov->saldofin<0)
-				throw new Exception("No puede sacar más de lo que existe", 400);
 		}
 
 		$Inv->saldo = $Mov->saldofin;
-		$Mov->idproducto = $Inv->idproducto;
-
 
 		$mysqli->autocommit(false);
 		try{
@@ -81,6 +71,39 @@ $app->group('/api/movimientos', function(){
 		}
 
 		return $response->withJson($Mov->toArray(), 201);
+	});
+
+	/**
+	* Actualizar movimiento por id
+	*/
+	$this->put('/{id}', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$inputs = $request->getParsedBody();
+
+		$Mov = new Models\Movimiento((int) $args['id']);
+		$MAD = new Access\Movimiento($mysqli, $logger);
+
+		$MAD->read($Mov);
+
+		$Mov->fechreg 	= \DateTime::createFromFormat('d-m-Y H:i', $inputs['fechreg']);
+		$Mov->tipo 		= $inputs['tipo'];
+		$Mov->cantidad	= $inputs['cantidad'];
+		$Mov->lote		= $inputs['lote'];
+		$Mov->guia 		= $inputs['guia'];
+		$Mov->apunte 	= $inputs['apunte'];
+
+		if($Mov->fechreg===false)
+			throw new Exception("Fecha inválida, formato no aceptado<br>Ejemplo Correcto: 4-4-2014 02:05", 400);
+
+		$Mov->validate();
+
+		$MAD->update($Mov);
+
+		return $response->withJson($Mov->toArray(), 202);
 	});
 
 
@@ -103,41 +126,162 @@ $app->group('/api/movimientos', function(){
 	/**
 	* Obtener todos los movimientos por inventario
 	*/
-	$this->get('/inventario/{id}', function ($request, $response, $args) {
+	$this->get('/inventario/{id}/desde/{desde}/hasta/{hasta}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
 		$login  = &$this->login;
 
+		$desde;$hasta;
+
+		if($args['desde']=='null'){
+			$desde = null;
+		}else{
+			$desde = \DateTime::createFromFormat('d-m-Y H:i', $args['desde']);
+			if($desde===false)
+				throw new Exception("La fecha 'desde' no es válida", 400);
+		}
+
+		if($args['hasta']=='null'){
+			$hasta = null;
+		}else{
+			$hasta = \DateTime::createFromFormat('d-m-Y H:i', $args['hasta']);
+			if($hasta===false)
+				throw new Exception("La fecha 'hasta' no es válida", 400);
+		}
+
 		$MAD = new Access\Movimiento($mysqli, $logger);
-		$lista = $MAD->search()->searchBy('idinventario', $args['id']);
+		$IAD = new Access\Inventario($mysqli, $logger);
+
+		$inv = new Models\Inventario($args['id']);
+
+		$IAD->read($inv);
+
+		$lista = $MAD->searchByInventario($args['id'], $desde, $hasta);
 		
 		return $response->withJson($lista->toArray());
 	});
 
-
 	/**
-	* Obtener todos los movimientos por producto y fecha
+	* Obtener todos los movimientos por inventario
 	*/
-	$this->get('/producto/{id}/{fi}/{ff}', function ($request, $response, $args) {
+	$this->get('/inventario/{id}/desde/{desde}/hasta/{hasta}/entradas', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
 		$login  = &$this->login;
 
-		$fi = \DateTime::createFromFormat('d-m-Y H:i:s', trim($args['fi']).' 00:00:00');
-		$ff = \DateTime::createFromFormat('d-m-Y H:i:s', trim($args['ff']).' 23:59:59');
+		$desde;$hasta;
 
-		if($fi===false || $ff===false){
-			throw new Exception("Una de las fechas es incorrecta", 400);
+		if($args['desde']=='null'){
+			$desde = null;
+		}else{
+			$desde = \DateTime::createFromFormat('d-m-Y H:i', $args['desde']);
+			if($desde===false)
+				throw new Exception("La fecha 'desde' no es válida", 400);
+		}
+
+		if($args['hasta']=='null'){
+			$hasta = null;
+		}else{
+			$hasta = \DateTime::createFromFormat('d-m-Y H:i', $args['hasta']);
+			if($hasta===false)
+				throw new Exception("La fecha 'hasta' no es válida", 400);
 		}
 
 		$MAD = new Access\Movimiento($mysqli, $logger);
+		$IAD = new Access\Inventario($mysqli, $logger);
 
-		$lista = $MAD->search()->searchBy('idproducto', $args['id']);
-		$lista = $lista->filterFech('fechreg', $fi, $ff);
+		$inv = new Models\Inventario($args['id']);
+
+		$IAD->read($inv);
+
+		$lista = $MAD->searchByInventario($args['id'], $desde, $hasta);
+
+		$lista = $lista->searchBy('tipo', 'entrada');
 		
 		return $response->withJson($lista->toArray());
+	});
+
+	$this->get('/inventario/{id}/desde/{desde}/hasta/{hasta}/salidas', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$desde;$hasta;
+
+		if($args['desde']=='null'){
+			$desde = null;
+		}else{
+			$desde = \DateTime::createFromFormat('d-m-Y H:i', $args['desde']);
+			if($desde===false)
+				throw new Exception("La fecha 'desde' no es válida", 400);
+		}
+
+		if($args['hasta']=='null'){
+			$hasta = null;
+		}else{
+			$hasta = \DateTime::createFromFormat('d-m-Y H:i', $args['hasta']);
+			if($hasta===false)
+				throw new Exception("La fecha 'hasta' no es válida", 400);
+		}
+
+		$MAD = new Access\Movimiento($mysqli, $logger);
+		$IAD = new Access\Inventario($mysqli, $logger);
+
+		$inv = new Models\Inventario($args['id']);
+
+		$IAD->read($inv);
+
+		$lista = $MAD->searchByInventario($args['id'], $desde, $hasta);
+
+		$lista = $lista->searchBy('tipo', 'salida');
+		
+		return $response->withJson($lista->toArray());
+	});
+
+	/**
+	* Actualizar los valores por inventario
+	*/
+	$this->put('/inventario/{id}/actualizar', function ($request, $response, $args) {
+
+		$mysqli = &$this->mysqli;
+		$logger = &$this->logger;
+		$login  = &$this->login;
+
+		$MAD = new Access\Movimiento($mysqli, $logger);
+		$IAD = new Access\Inventario($mysqli, $logger);
+		$inv = new Models\Inventario($args['id']);
+
+		$IAD->read($inv);
+		$lista = $MAD->searchByInventario($args['id'], $desde, $hasta);
+
+		$negativos = false;
+
+		$stock = $inv->inicial;
+		foreach ($lista->list as $i => $mov) {
+			$mov->saldoini = $stock;
+			if($mov->tipo=='entrada'){
+				$stock += $mov->cantidad;
+			}else{
+				$stock -= $mov->cantidad;
+			}
+			$mov->saldofin = $stock;
+			if($stock<0) $negativos=true;
+			$MAD->update($mov);
+		}
+		$inv->saldo = $stock;
+
+		$IAD->update($inv);
+
+		$rpta = 'Actualización Exitosa';
+		if($negativos) $rpta .= '<br>Se encontraron saldos negativos, porfavor verificar.';
+
+		$i = $inv->toArray();
+		$i['mensaje'] = $rpta;
+
+		return $response->withJson($i);
 	});
 
 
@@ -158,33 +302,23 @@ $app->group('/api/movimientos', function(){
 		return $response->withJson($Mov->toArray());
 	});
 
-
 	/**
-	* Actualizar usuario por id
+	* Eliminar movimiento por id
 	*/
-	$this->put('/{id}', function ($request, $response, $args) {
+	$this->delete('/{id}', function ($request, $response, $args) {
 
 		$mysqli = &$this->mysqli;
 		$logger = &$this->logger;
 		$login  = &$this->login;
 
-		$inputs = $request->getParsedBody();
-
-		$Mov = new Models\Movimiento((int) $args['id']);
+		$Mov = new Models\Movimiento($args['id']);
 		$MAD = new Access\Movimiento($mysqli, $logger);
 
 		$MAD->read($Mov);
 
-		$Mov->lote		= $inputs['lote'];
-		$Mov->guia 		= $inputs['guia'];
-		$Mov->apunte 	= $inputs['apunte'];
+		$MAD->delete($Mov);
 
-		$Mov->validate();
-
-		$MAD->update($Mov);
-
-		return $response->withJson($Mov->toArray(), 202);
+		return $response->withStatus(204);
 	});
-
 
 });

@@ -7,4 +7,12 @@ SimpleStock.Models.Inventario = Backbone.Model.extend({
 		options.url = '/api/inventarios/periodo/'+idPer+'/producto/'+idPro;
 		this.fetch(options);
 	},
+
+	recalcular : function(options){
+		var self = this;
+		options = (options) || {};
+		options.wait = true;
+		options.url = '/api/movimientos/inventario/'+this.get('id')+'/actualizar';
+		this.save({}, options);
+	},
 });
